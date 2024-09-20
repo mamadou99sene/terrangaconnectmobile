@@ -1,0 +1,14 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cercle de fond -->
+  <circle cx="50" cy="50" r="48" fill="#E0F7E8" stroke="#4CAF50" stroke-width="2"/>
+  <!-- Mains entrelacées (en vert pour l'entraide) -->
+  <path d="M30 55 C32 50, 45 45, 55 55 C65 65, 68 70, 75 80" fill="none" stroke="#4CAF50" stroke-width="4"/>
+  <path d="M70 55 C68 50, 55 45, 45 55 C35 65, 32 70, 25 80" fill="none" stroke="#4CAF50" stroke-width="4"/>
+  <!-- Symbole du cœur (toujours en orange) -->
+  <path d="M50 45 C45 35, 35 35, 35 45 C35 55, 50 65, 50 65 C50 65, 65 55, 65 45 C65 35, 55 35, 50 45 Z" fill="#FF7A30"/>
+  <!-- Goutte de sang (toujours en orange) -->
+  <path d="M50 35 C52 25, 48 25, 50 35 C52 42, 50 45, 50 45 C50 45, 48 42, 50 35 Z" fill="#FF7A30"/>
+  <!-- Croix d'urgence (toujours en orange) -->
+  <rect x="48" y="10" width="4" height="12" fill="#FF7A30"/>
+  <rect x="43" y="15" width="12" height="4" fill="#FF7A30"/>
+</svg>
