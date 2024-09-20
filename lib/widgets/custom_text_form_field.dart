@@ -108,12 +108,34 @@ class CustomTextFormField extends StatelessWidget {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      //firstDate: DateTime(1900),
+      //lastDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 30)),
     );
     if (selectedDate != null) {
-      controller?.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+      // Sélection de l'heure
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(), // Heure actuelle par défaut
+      );
+
+      if (selectedTime != null) {
+        // Combine la date et l'heure sélectionnées
+        DateTime finalDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+        // Formatte la date et l'heure pour l'afficher dans le champ de texte
+        controller?.text = DateFormat('yyyy-MM-dd HH:mm').format(finalDateTime);
+      }
     }
+    // if (selectedDate != null) {
+    //   controller?.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+    // }
   }
 
   InputDecoration get decoration => InputDecoration(
