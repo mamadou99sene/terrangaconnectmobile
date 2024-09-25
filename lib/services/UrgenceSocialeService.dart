@@ -15,7 +15,7 @@ class Urgencesocialeservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 201 || response.statusCode == 200) {
-      var responseJson = jsonDecode(response.body);
+      var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
       for (var urgence in responseJson) {
         Urgencesociale urgencesociale = Urgencesociale.fromJson(urgence);
         allUrgences.add(urgencesociale);
@@ -33,7 +33,7 @@ class Urgencesocialeservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body);
+      var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       urgencesociale = Urgencesociale.fromJson(responseBody);
     }
     return urgencesociale;
@@ -54,8 +54,9 @@ class Urgencesocialeservice {
         request.files
             .add(await http.MultipartFile.fromPath('images', image.path));
       }
+
       http.StreamedResponse response =
-          await request.send().timeout(Duration(seconds: 10));
+          await request.send().timeout(Duration(seconds: 30));
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       }

@@ -15,7 +15,7 @@ class Demandedonsangservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 201 || response.statusCode == 200) {
-      var responseJson = jsonDecode(response.body);
+      var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
       for (var demande in responseJson) {
         Demandedonsang demandedonsang = Demandedonsang.fromJson(demande);
         allDemandeDonSang.add(demandedonsang);
@@ -34,7 +34,7 @@ class Demandedonsangservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body);
+      var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       demandedonsang = Demandedonsang.fromJson(responseBody);
     }
     return demandedonsang;
@@ -56,7 +56,7 @@ class Demandedonsangservice {
             .add(await http.MultipartFile.fromPath('images', image.path));
       }
       http.StreamedResponse response =
-          await request.send().timeout(Duration(seconds: 10));
+          await request.send().timeout(Duration(seconds: 30));
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       }
