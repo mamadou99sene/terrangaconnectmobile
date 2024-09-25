@@ -10,6 +10,8 @@ import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/publication_urgence/provider/PublicationUrgenceProvider.dart';
 import 'package:terangaconnect/services/UrgenceSocialeService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
+import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
+import 'package:terangaconnect/widgets/RejectedDialog.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/widgets/custom_text_form_field.dart';
 
@@ -51,7 +53,7 @@ class Publicationurgence extends StatelessWidget {
                 children: [
                   SizedBox(height: 10.v),
                   CustomImageView(
-                    imagePath: ImageConstant.imgUserErrorcontainer,
+                    imagePath: ImageConstant.imageTeranga,
                     height: 76.v,
                     width: 87.h,
                   ),
@@ -126,7 +128,7 @@ class Publicationurgence extends StatelessWidget {
               provider.descriptionUrgenceController,
           builder: (context, descriptionController, child) {
             return CustomTextFormField(
-              controller: descriptionController,
+              controller: controllerDescription,
               hintText: "Description de l'urgence sociale ici".tr,
               maxLines: 5,
               validator: (value) {
@@ -361,7 +363,6 @@ class Publicationurgence extends StatelessWidget {
     return CustomElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          //recuperation des entrées utilisateur
           final provider =
               Provider.of<Publicationurgenceprovider>(context, listen: false);
           String titre = controllerTitre.text;
@@ -370,6 +371,7 @@ class Publicationurgence extends StatelessWidget {
           String lieu = controllerLieu.text;
           String type = provider.getTypeUrgence!;
           List<File> images = provider.selectedImages;
+
           Urgencesociale urgence = Urgencesociale(
               titre: titre,
               description: description,
@@ -377,33 +379,60 @@ class Publicationurgence extends StatelessWidget {
               lieu: lieu,
               type: type,
               montantRequis: montant);
-          print(images.length);
+
+          // Utilisez un BuildContext séparé pour les dialogues
+          BuildContext? dialogContext;
           showDialog(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return Center(
-                  child: SpinKitCircle(
-                color: Colors.green,
-                size: 50,
-              ));
+              dialogContext = context;
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: Center(
+                    child: SpinKitCircle(
+                  color: Colors.green,
+                  size: 50,
+                )),
+              );
             },
           );
+
           try {
             bool? savedurgence = await Urgencesocialeservice()
                 .saveUrgenceSociale(urgence, images);
-            if (savedurgence == true) {}
-            Navigator.of(context).pop();
-          } catch (e) {
-            Navigator.of(context).pop();
 
-            // Afficher une erreur
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Erreur de connexion !!! Retentez")),
-            );
+            // Assurez-vous que le contexte du dialogue est toujours valide avant de le fermer
+            if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+              Navigator.pop(dialogContext!);
+            }
+
+            if (savedurgence == true) {
+              String message =
+                  "Urgence envoyée, un moderateur vous contactera pour la validation.";
+              showConfirmationDialog(context, message);
+            } else {
+              String title = "Publication non envoyée";
+              String message = "Merci de ressayer !!!";
+              showRejecteddialogDialog(context, title, message);
+            }
+          } catch (e) {
+            // Assurez-vous que le contexte du dialogue est toujours valide avant de le fermer
+            if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+              Navigator.pop(dialogContext!);
+            }
+
+            if (e.toString().contains("MaxUploadSizeExceededException")) {
+              showRejecteddialogDialog(context, "Taille d'image excessive",
+                  "La taille totale des images dépasse la limite autorisée. Veuillez réduire le nombre ou la taille des images.");
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("Erreur de connexion. Veuillez réessayer.")));
+            }
           }
-        } else
+        } else {
           print("Invalid");
+        }
       },
       height: 54.v,
       text: "Publier l'urgence".tr,

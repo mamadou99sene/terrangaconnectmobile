@@ -1,71 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/core/utils/size_utils.dart';
 import 'package:terangaconnect/localization/app_localization.dart';
-import 'package:terangaconnect/models/UrgenceSociale.dart';
+import 'package:terangaconnect/models/DemandeDonSang.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/AppEvent.dart';
+import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/presentation/details/DemandeDon_Sang_Details.dart';
 import 'package:terangaconnect/services/DemandeDonSangService.dart';
-import 'package:terangaconnect/services/EvenementService.dart';
-import 'package:terangaconnect/services/UrgenceSocialeService.dart';
 import 'package:terangaconnect/theme/custom_text_style.dart';
+import 'package:terangaconnect/widgets/DemandeDonSangItem.dart';
+import 'package:terangaconnect/widgets/DemandeSangItemWithImages.dart';
 import 'package:terangaconnect/widgets/MyDrawer.dart';
-import 'package:terangaconnect/widgets/WidgetItem.dart';
-
+import 'package:terangaconnect/widgets/publication_button.dart';
 import '../core/utils/image_constant.dart';
 import '../widgets/app_bar/appbar_leading_image.dart';
 import '../widgets/app_bar/appbar_title.dart';
 import '../widgets/app_bar/custom_app_bar.dart';
 import '../widgets/custom_bottom_bar.dart';
 
-class App extends StatefulWidget {
+class AppDemandeDonSang extends StatefulWidget {
+  late Utilisateur utilisateur;
+  AppDemandeDonSang({required this.utilisateur});
   @override
-  _AppState createState() => _AppState();
+  _AppemandeDonSangState createState() => _AppemandeDonSangState();
 }
 
-class _AppState extends State<App> {
-  String selectedCategory = 'Urgences';
-  List<dynamic> items = [];
+class _AppemandeDonSangState extends State<AppDemandeDonSang> {
+  String selectedCategory = 'Dons';
+  late List<Demandedonsang> demandes = [];
+  late List<Demandedonsang> filterdDemandes = [];
+  TextEditingController searchController = TextEditingController();
   @override
   void initState() {
     super.initState();
-    _loadUrgences();
-  }
-
-  Future<void> _loadUrgences() async {
-    List<Urgencesociale> allUrgences =
-        await Urgencesocialeservice().getAllUrgenceSociales();
-    setState(() {
-      items = allUrgences;
-      selectedCategory = 'Urgences';
-    });
-  }
-
-  Future<void> _loadEvenements() async {
-    final evenements = await Evenementservice().getAllEvents();
-    setState(() {
-      items = evenements;
-      selectedCategory = 'Événements';
-    });
+    _loadDonsSang();
   }
 
   Future<void> _loadDonsSang() async {
-    final donsSang = await Demandedonsangservice().getAllDemandeDonSang();
-    setState(() {
-      items = donsSang;
-      selectedCategory = 'Dons';
-    });
+    demandes = await Demandedonsangservice().getAllDemandeDonSang();
+    filterdDemandes = demandes;
   }
 
-  void _changeCategory(String category) {
-    switch (category) {
-      case 'Urgences':
-        _loadUrgences();
-        break;
-      case 'Événements':
-        _loadEvenements();
-        break;
-      case 'Dons':
-        _loadDonsSang();
-        break;
-    }
+  _filterDemande(String query) {
+    setState(() {
+      filterdDemandes = demandes
+          .where((demande) =>
+              demande.titre.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -82,16 +66,29 @@ class _AppState extends State<App> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 26.v),
+                SizedBox(height: 20.v),
+                _buildSearchBar(),
                 Padding(
-                  padding: EdgeInsets.only(left: 1.h),
+                  padding: EdgeInsets.only(left: 1.h, top: 10.h),
                   child: Text(
-                    "lbl_explorer".tr,
-                    style: CustomTextStyles.headlineSmallGray900,
+                    "lbl_d_explorer".tr,
+                    style: CustomTextStyles.titleMediumGray40002,
                   ),
                 ),
                 SizedBox(height: 6.v),
-                _buildItemsList(context, items),
+                FutureBuilder(
+                  future: _loadDonsSang(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SpinKitPulsingGrid(
+                        color: Colors.green,
+                      );
+                    } else {
+                      print(filterdDemandes.length);
+                      return _buildItemsList(context, filterdDemandes);
+                    }
+                  },
+                ),
                 SizedBox(height: 20.v),
               ],
             ),
@@ -158,17 +155,25 @@ class _AppState extends State<App> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildBottomButtonIcon("Urgences", Icons.warning, () {
-                  _changeCategory('Urgences');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AppUrgence(
+                                utilisateur: widget.utilisateur,
+                              )));
                 }),
                 _buildBottomButtonIcon("Événements", Icons.event, () {
-                  _changeCategory('Événements');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AppEvent(
+                                utilisateur: widget.utilisateur,
+                              )));
                 }),
-                _buildBottomButtonIcon("Dons", Icons.favorite, () {
-                  _changeCategory('Dons');
-                }),
-                _buildBottomButtonIcon("Recherche", Icons.search, () {
+                _buildBottomButtonIcon("Dons", Icons.favorite, () {}),
+                _buildBottomButtonIcon("Assistance", Icons.assistant, () {
                   setState(() {
-                    selectedCategory = "Recherche";
+                    selectedCategory = "Assistance";
                   });
                 }),
               ],
@@ -205,15 +210,47 @@ class _AppState extends State<App> {
     );
   }
 
+  Widget _buildSearchBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25.h),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: TextFormField(
+        controller: searchController,
+        textAlign: TextAlign.start,
+        decoration: InputDecoration(
+          hintText: "Rechercher une demande de sang...".tr,
+          hintStyle: theme.textTheme.labelLarge,
+          border: InputBorder.none,
+          suffixIcon: IconButton(
+            icon: Icon(Icons.search, color: Colors.grey[600]),
+            onPressed: () => _filterDemande(searchController.text),
+          ),
+        ),
+        onChanged: _filterDemande,
+        style: theme.textTheme.headlineLarge,
+      ),
+    );
+  }
+
   Widget buildBottomBar(BuildContext context) {
     return CustomBottomBar(
       onChanged: (BottomBarEnum type) {
         switch (type) {
           case BottomBarEnum.Explorer:
             // Naviguer vers la page d'exploration
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AppUrgence(
+                          utilisateur: widget.utilisateur,
+                        )));
             break;
           case BottomBarEnum.Publication:
-            // Naviguer vers la page de publication
+            showPublicationDialog(context, widget.utilisateur);
             break;
           case BottomBarEnum.MesAnnonces:
             // Naviguer vers la page des annonces de l'utilisateur
@@ -226,9 +263,9 @@ class _AppState extends State<App> {
     );
   }
 
-  Widget _buildItemsList(BuildContext context, List<dynamic> items) {
-    if (items.isEmpty) {
-      return Center(child: Text("Aucun élément trouvé"));
+  /* Widget _buildItemsList(BuildContext context, List<Demandedonsang> demandes) {
+    if (demandes.isEmpty) {
+      return Center(child: Text("Aucune demande sang trouvée"));
     }
     return GridView.builder(
       shrinkWrap: true,
@@ -239,23 +276,45 @@ class _AppState extends State<App> {
         mainAxisSpacing: 8,
         childAspectRatio: 0.7,
       ),
-      itemCount: items.length,
+      itemCount: demandes.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+            onTap: () {
+              // Naviguer vers la page de détails de l'élément
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DemandedonSangDetails(
+                          demandedonsang: demandes[index])));
+            },
+            child: Demandedonsangitem(
+              demandedonsang: demandes[index],
+            ));
+      },
+    );
+  } */
+  Widget _buildItemsList(BuildContext context, List<Demandedonsang> demandes) {
+    if (demandes.isEmpty) {
+      return Center(child: Text("Aucun évènement trouvé"));
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: demandes.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            // Naviguer vers la page de détails de l'élément
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DemandedonSangDetails(
+                        demandedonsang: demandes[index])));
           },
-          child: WidgetItem(
-            item: items[index],
-            category: selectedCategory,
+          child: Demandesangitemwithimages(
+            demandedonsang: demandes[index],
           ),
         );
       },
     );
   }
-}
-
-Future<List<String>> getDons() async {
-  List<String> list = [];
-  return list;
 }

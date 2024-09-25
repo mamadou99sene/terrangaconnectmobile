@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/core/app_export.dart';
+import 'package:terangaconnect/models/Evenement.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/publication_evenement/provider/PublicationEvenementProvider.dart';
+import 'package:terangaconnect/presentation/publication_urgence/PublicationUrgence.dart';
+import 'package:terangaconnect/services/EvenementService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
+import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
+import 'package:terangaconnect/widgets/RejectedDialog.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/widgets/custom_text_form_field.dart';
 
@@ -397,7 +402,17 @@ class Publicationevenement extends StatelessWidget {
           String lieu = controllerLieu.text;
           String type = provider.getTypeEvent!;
           List<File> images = provider.selectedImages;
-          //instanciation objet
+          DateTime startDate =
+              DateTime.parse(provider.startDateController.text);
+          DateTime endDate = DateTime.parse(provider.endDateController.text);
+          Evenement evenement = Evenement(
+              titre: titre,
+              description: description,
+              demandeurId: utilisateur.id!,
+              lieu: lieu,
+              type: type,
+              dateDebut: startDate,
+              dateFin: endDate);
 
           print(type);
           showDialog(
@@ -412,7 +427,17 @@ class Publicationevenement extends StatelessWidget {
             },
           );
           try {
-            //appel service
+            bool savedEvent =
+                await Evenementservice().saveEvenement(evenement, images);
+            if (savedEvent == true) {
+              String message =
+                  "événement envoyé, un moderateur vous contactera pour la validation.";
+              showConfirmationDialog(context, message);
+            } else {
+              String title = "Publication non envoyée";
+              String message = "Merci de ressayer !!!";
+              showRejecteddialogDialog(context, title, message);
+            }
             Navigator.of(context).pop();
           } catch (e) {
             Navigator.of(context).pop();

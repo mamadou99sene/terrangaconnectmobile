@@ -7,9 +7,11 @@ import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/DemandeDonSang.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/publication_demande_don_sang/provider/PublicationDemandeDonSangProvider.dart';
+import 'package:terangaconnect/presentation/publication_evenement/PublicationEvenement.dart';
 import 'package:terangaconnect/services/DemandeDonSangService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
+import 'package:terangaconnect/widgets/RejectedDialog.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/widgets/custom_text_form_field.dart';
 
@@ -407,19 +409,18 @@ class Publicationdemandedonsang extends StatelessWidget {
           );
           try {
             //appel service
-            // bool saved = await Demandedonsangservice()
-            //     .saveDemandedonSang(demande, images);
-            bool saved = true;
+            bool saved = await Demandedonsangservice()
+                .saveDemandedonSang(demande, images);
+
             if (saved == true) {
-              showConfirmationDialog(context);
+              String message =
+                  "demande de sang envoyée, un moderateur vous contactera pour la validation.";
+              showConfirmationDialog(context, message);
+            } else {
+              String title = "Publication non envoyée";
+              String message = "Merci de ressayer !!!";
+              showRejecteddialogDialog(context, title, message);
             }
-            // Afficher une erreur
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                "Impossible d'envoyer votre demande !!",
-                style: theme.textTheme.titleMedium,
-              ),
-            ));
             Navigator.of(context).pop();
           } catch (e) {
             Navigator.of(context).pop();
@@ -437,21 +438,4 @@ class Publicationdemandedonsang extends StatelessWidget {
       buttonStyle: CustomButtonStyles.fillPrimary,
     );
   }
-}
-
-void showConfirmationDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return ConfirmationDialog(
-        text:
-            "demande envoyée, un modérateur vous contactera pour la validation de votre demande",
-        onTap: () {
-          Navigator.of(context).pop(true);
-          //route
-        },
-      );
-    },
-  );
 }
