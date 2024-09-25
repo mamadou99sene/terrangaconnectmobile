@@ -61,6 +61,9 @@ final Map<String, String> enUs = {
   "lieu_event": "Lieu de l'evenement",
   "pbl_dmnd": "Publier une demande de don de sang",
   "dmnd_ttl": "Tite dela demande",
-  "adrs_bnf" : "Entrer l'adresse du bénéficiaire",
+  "adrs_bnf": "Entrer l'adresse du bénéficiaire",
   "adrs": "adresse obligatoire",
+  "lbl_urg_explorer": "Explorer les urgences",
+  "lbl_ev_explorer": "Explorer les evenements",
+  "lbl_d_explorer": "Explorer les demandes de sang"
 };
