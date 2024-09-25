@@ -37,6 +37,7 @@ class Demandedonsang {
     adresse = jsonData["adresse"];
     classe = jsonData["classe"];
     rhesus = jsonData["rhesus"];
+    images = List.from(jsonData["images"]);
   }
 
   Map<String, dynamic> toJson() {

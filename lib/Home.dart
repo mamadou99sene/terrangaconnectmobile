@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
-import 'package:terangaconnect/presentation/App.dart';
+import 'package:terangaconnect/presentation/AppUrgence.dart';
 import 'package:terangaconnect/presentation/inscription/Inscription.dart';
 import 'package:terangaconnect/presentation/inscription/provider/InscriptionProvider.dart';
 import 'package:terangaconnect/presentation/publication_demande_don_sang/PublicationDemandeDonSang.dart';
@@ -63,7 +63,10 @@ class Home extends StatelessWidget {
                       roles: []))
             },
             //initialRoute: "/don",
-            home: App(),
+            home: AppUrgence(
+              utilisateur: Utilisateur(
+                  id: '7af3ea1d-4848-4261-9ed0-b4429dd5f244', email: 'senemamadou1999@gmail.com', telephone: '778340335', roles: []),
+            ),
           ),
         );
       },

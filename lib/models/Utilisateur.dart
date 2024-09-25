@@ -2,7 +2,7 @@ class Utilisateur {
   late String? id;
   late String email;
   late String telephone;
-  late int? score;
+  late double? score;
   late List<String> roles = [];
   late String? profile;
   late String? password;

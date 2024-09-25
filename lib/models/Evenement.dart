@@ -40,6 +40,7 @@ class Evenement {
     type = jsonData["type"];
     dateDebut = DateTime.parse(jsonData["dateDebut"].toString());
     dateFin = DateTime.parse(jsonData["dateFin"].toString());
+    images = List.from(jsonData["images"]);
   }
 
   Map<String, dynamic> toJson() {
