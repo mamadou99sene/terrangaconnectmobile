@@ -32,9 +32,11 @@ class Eventitemwithimages extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "${evenement.demandeur!.email}",
-                  style: CustomTextStyles.labelLargeErrorContainer,
+                Flexible(
+                  child: Text(
+                    "${evenement.demandeur!.email}",
+                    style: CustomTextStyles.labelLargeErrorContainer,
+                  ),
                 ),
                 Text(
                   "il y'a ${Control().getDurationString(DateTime.now().difference(evenement.datePublication!))}",
@@ -63,30 +65,32 @@ class Eventitemwithimages extends StatelessWidget {
         Card(child: _buildImageGallery()),
         Padding(
           padding: EdgeInsets.all(8.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.watch_later, color: Colors.grey, size: 16),
-                  SizedBox(width: 4.h),
-                  Text(
-                    "${Control().formatDate(evenement.dateDebut)}",
-                    style: CustomTextStyles.labelLargeErrorContainer,
-                  ),
-                ],
-              ),
-              CustomElevatedButton(
-                height: 24.v,
-                width: 60.h,
-                text: "${evenement.type}",
-                decoration: BoxDecoration(color: Colors.white),
-                buttonTextStyle: Theme.of(context)
-                    .textTheme
-                    .labelSmall!
-                    .copyWith(color: Colors.white),
-              ),
-            ],
+          child: Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.watch_later, color: Colors.grey, size: 16),
+                    SizedBox(width: 4.h),
+                    Text(
+                      "${Control().formatDate(evenement.dateDebut)}",
+                      style: CustomTextStyles.labelLargeErrorContainer,
+                    ),
+                  ],
+                ),
+                CustomElevatedButton(
+                  height: 24.v,
+                  width: 60.h,
+                  text: "${evenement.type}",
+                  decoration: BoxDecoration(color: Colors.white),
+                  buttonTextStyle: Theme.of(context)
+                      .textTheme
+                      .labelSmall!
+                      .copyWith(color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
         Padding(

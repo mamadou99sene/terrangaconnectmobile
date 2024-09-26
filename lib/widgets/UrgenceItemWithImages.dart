@@ -29,20 +29,22 @@ class Urgenceitemwithimages extends StatelessWidget {
           ),
           title: Container(
             padding: EdgeInsets.only(bottom: 5.h),
-            child: Flexible(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
                     "${urgence.demandeur!.email}",
                     style: CustomTextStyles.labelLargeErrorContainer,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    "il y'a ${Control().getDurationString(DateTime.now().difference(urgence.datePublication!))}",
-                    style: CustomTextStyles.labelLargeErrorContainer,
-                  ),
-                ],
-              ),
+                ),
+                Text(
+                  "il y'a ${Control().getDurationString(DateTime.now().difference(urgence.datePublication!))}",
+                  style: CustomTextStyles.labelLargeErrorContainer,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
           subtitle: Text(
@@ -81,6 +83,7 @@ class Urgenceitemwithimages extends StatelessWidget {
                   Text(
                     "requis ${urgence.montantRequis} FCFA",
                     style: CustomTextStyles.labelLargeErrorContainer,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

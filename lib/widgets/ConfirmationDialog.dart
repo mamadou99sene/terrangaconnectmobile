@@ -6,9 +6,9 @@ import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 
 class Confirmationdialog extends StatelessWidget {
   final String message;
+  final VoidCallback onTap;
 
-  const Confirmationdialog({Key? key, required this.message}) : super(key: key);
-
+  const Confirmationdialog({required this.message, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -44,7 +44,8 @@ class Confirmationdialog extends StatelessWidget {
             children: <Widget>[
               Text(
                 "Publication confirmée",
-                style: theme.textTheme.titleLarge?.copyWith(color: Colors.green),
+                style:
+                    theme.textTheme.titleLarge?.copyWith(color: Colors.green),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 16),
@@ -54,7 +55,7 @@ class Confirmationdialog extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24),
-              _buildConfirmButton(context),
+              _buildConfirmButton(context, onTap),
             ],
           ),
         ),
@@ -75,25 +76,29 @@ class Confirmationdialog extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmButton(BuildContext context) {
+  Widget _buildConfirmButton(BuildContext context, VoidCallback onPresse) {
     return SizedBox(
       width: double.infinity,
       child: CustomElevatedButton(
         height: 44.v,
         text: "OK".tr,
         buttonStyle: CustomButtonStyles.fillPrimary,
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: onPresse,
       ),
     );
   }
 }
 
-void showConfirmationDialog(BuildContext context, String message) {
+void showConfirmationDialog(
+    BuildContext context, String message, VoidCallback onTap) {
   showDialog(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return Confirmationdialog(message: message);
+      return Confirmationdialog(
+        message: message,
+        onTap: onTap,
+      );
     },
   );
 }

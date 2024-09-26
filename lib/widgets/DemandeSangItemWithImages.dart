@@ -34,16 +34,19 @@ class Demandesangitemwithimages extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "${demandedonsang.demandeur!.email}".tr,
-                  selectionColor: Colors.green,
-                  style: CustomTextStyles.labelLargeErrorContainer,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  softWrap: true,
+                Flexible(
+                  child: Text(
+                    "${demandedonsang.demandeur!.email}".tr,
+                    selectionColor: Colors.green,
+                    style: CustomTextStyles.labelLargeErrorContainer,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: true,
+                  ),
                 ),
                 Text(
-                  "il y'a ${Control().getDurationString(DateTime.now().difference(demandedonsang.datePublication!))}".tr,
+                  "il y'a ${Control().getDurationString(DateTime.now().difference(demandedonsang.datePublication!))}"
+                      .tr,
                   style: CustomTextStyles.labelLargeErrorContainer,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
@@ -74,31 +77,33 @@ class Demandesangitemwithimages extends StatelessWidget {
         Card(child: _buildImageGallery()),
         Padding(
           padding: EdgeInsets.all(8.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.bloodtype, color: Colors.red, size: 24),
-                  SizedBox(width: 4.h),
-                  Text(
-                    "classe sang ${demandedonsang.classe}",
-                    style: CustomTextStyles.labelLargeErrorContainer,
-                  ),
-                ],
-              ),
-              CustomElevatedButton(
-                height: 24.v,
-                width: 90.h,
-                text: "Rhesus: ${demandedonsang.rhesus}",
-                decoration: BoxDecoration(color: Colors.white),
-                buttonTextStyle: Theme.of(context)
-                    .textTheme
-                    .labelSmall!
-                    .copyWith(color: Colors.white),
-              ),
-            ],
+          child: Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.bloodtype, color: Colors.red, size: 24),
+                    SizedBox(width: 4.h),
+                    Text(
+                      "classe sang ${demandedonsang.classe}",
+                      style: CustomTextStyles.labelLargeErrorContainer,
+                    ),
+                  ],
+                ),
+                CustomElevatedButton(
+                  height: 24.v,
+                  width: 90.h,
+                  text: "Rhesus: ${demandedonsang.rhesus}",
+                  decoration: BoxDecoration(color: Colors.white),
+                  buttonTextStyle: Theme.of(context)
+                      .textTheme
+                      .labelSmall!
+                      .copyWith(color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
         Padding(

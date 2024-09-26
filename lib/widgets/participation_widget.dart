@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:terangaconnect/core/app_export.dart';
-import 'package:terangaconnect/core/utils/size_utils.dart';
-import 'package:terangaconnect/localization/app_localization.dart';
-import 'package:terangaconnect/models/UrgenceSociale.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/participation_espece/DonEspeceScreen.dart';
+import 'package:terangaconnect/presentation/participation_materiel/Participation_Materiel.dart';
+import 'package:terangaconnect/presentation/participation_pret/Participation_pret.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 
 void showUrgenceParticipationDialog(
-    BuildContext context, Urgencesociale urgence) {
+    BuildContext context, String declarationId, Utilisateur utilisateur) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -47,14 +48,42 @@ void showUrgenceParticipationDialog(
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 20),
-                  _buildParticipationButton(context, 'Don en espèces',
-                      Icons.monetization_on_outlined, () {}),
-                  SizedBox(height: 10),
-                  _buildParticipationButton(context, 'Don de matériel',
-                      Icons.inventory_outlined, () {}),
+                  _buildParticipationButton(
+                      context, 'Don en espèces', Icons.monetization_on_outlined,
+                      () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Donespecescreen(
+                                  declarationId: declarationId,
+                                  utilisateur: utilisateur,
+                                )));
+                  }),
                   SizedBox(height: 10),
                   _buildParticipationButton(
-                      context, 'Prêt de bien', Icons.home_outlined, () {}),
+                      context, 'Don de matériel', Icons.inventory_outlined, () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ParticipationMateriel(
+                                  declarationId: declarationId,
+                                  utilisateur: utilisateur,
+                                )));
+                  }),
+                  SizedBox(height: 10),
+                  _buildParticipationButton(
+                      context, 'Prêt de bien', Icons.home_outlined, () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ParticipationPret(
+                                  declarationId: declarationId,
+                                  utilisateur: utilisateur,
+                                )));
+                  }),
                 ],
               ),
             ),
@@ -78,12 +107,8 @@ void showUrgenceParticipationDialog(
   );
 }
 
-Widget _buildParticipationButton(
-  BuildContext context,
-  String text,
-  IconData iconData,
-  VoidCallback onPressed,
-) {
+Widget _buildParticipationButton(BuildContext context, String text,
+    IconData iconData, VoidCallback onPressed) {
   return SizedBox(
     width: double.infinity,
     child: CustomElevatedButton(
