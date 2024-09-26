@@ -37,7 +37,8 @@ class Donmaterielservice {
     return returnedDon;
   }
 
-  Future<bool?> savePretwithImages(Donmateriel donMateriel, List<File> images) async {
+  Future<bool> saveDonMaterielwithImages(
+      Donmateriel donMateriel, List<File> images) async {
     try {
       var request = http.MultipartRequest(
         'POST',
@@ -49,7 +50,7 @@ class Donmaterielservice {
       });
       for (File image in images) {
         request.files
-            .add(await http.MultipartFile.fromPath('imagesDon', image.path));
+            .add(await http.MultipartFile.fromPath('images', image.path));
       }
 
       http.StreamedResponse response =

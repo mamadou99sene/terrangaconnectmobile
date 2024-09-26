@@ -37,7 +37,7 @@ class Pretservice {
     return returnedPret;
   }
 
-  Future<bool?> savePretwithImages(Pret pret, List<File> images) async {
+  Future<bool> savePretwithImages(Pret pret, List<File> images) async {
     try {
       var request = http.MultipartRequest(
         'POST',

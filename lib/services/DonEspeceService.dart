@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/models/DonEspece.dart';
-import 'package:terangaconnect/models/Pret.dart';
 
 class Donespeceservice {
   Future<List<Donespece>> getAllDonsEspeces() async {
@@ -25,42 +22,32 @@ class Donespeceservice {
   }
 
   Future<Donespece> getDonEspeceById(Donespece don) async {
-    late Pret returnedEspece;
+    late Donespece returnedEspece;
     http.Response response = await http.get(
-        Uri.parse("${API.URL}${API.don_Service}prets/${pret.id}"),
+        Uri.parse("${API.URL}${API.don_Service}donsEspece/${don.id}"),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
       var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
-      returnedPret = Pret.fromJson(responseBody);
+      returnedEspece = Donespece.fromJson(responseBody);
     }
-    return returnedPret;
+    return returnedEspece;
   }
 
-  Future<bool?> savePretwithImages(Pret pret, List<File> images) async {
-    try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse("${API.URL}${API.don_Service}prets"),
-      );
-      final pretJson = pret.toJson();
-      pretJson.forEach((key, value) {
-        request.fields[key] = value.toString();
-      });
-      for (File image in images) {
-        request.files
-            .add(await http.MultipartFile.fromPath('images', image.path));
-      }
-
-      http.StreamedResponse response =
-          await request.send().timeout(Duration(seconds: 30));
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;
-      }
-    } catch (e) {
-      debugPrint("$e");
+  Future<Donespece>? saveDonEspece(Donespece don) async {
+    late Donespece savedDon;
+    http.Response response = await http
+        .post(Uri.parse("${API.URL}${API.don_Service}donsEspece"),
+            headers: {
+              HttpHeaders.contentTypeHeader: 'application/json',
+            },
+            body: jsonEncode(don.toJson()))
+        .timeout(Duration(seconds: 10));
+    if (response.statusCode == 201) {
+      var responseBody = jsonDecode(response.body);
+      savedDon = Donespece.fromJson(responseBody);
     }
-    return false;
+    return savedDon;
   }
 }
