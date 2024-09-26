@@ -9,7 +9,6 @@ class Donmateriel {
   late Donnateur? donnateur;
   late String titre;
   late String description;
-  late int duree;
   late List<String>? imagesDon = [];
   Donmateriel(
       {this.id,
@@ -19,7 +18,6 @@ class Donmateriel {
       required this.donateurId,
       required this.titre,
       required this.description,
-      required this.duree,
       this.donnateur,
       this.imagesDon});
 
@@ -32,7 +30,6 @@ class Donmateriel {
     donnateur = jsonData["donnateur"];
     titre = jsonData["titre"];
     description = jsonData["description"];
-    duree = jsonData["duree"];
     imagesDon = List.from(jsonData["images"]);
   }
 
@@ -42,7 +39,6 @@ class Donmateriel {
       'donateurId': donateurId,
       'titre': titre,
       'description': description,
-      'duree': duree,
       'type': type,
     };
   }

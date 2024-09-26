@@ -24,7 +24,7 @@ class Donsang {
     type = jsonData["type"];
     declarationId = jsonData["declarationId"];
     donateurId = jsonData["donateurId"];
-    donnateur = jsonData["donnateur"];
+    donnateur = Donnateur.fromJson(jsonData["donnateur"]);
     adresseDonnateur = jsonData["adresseDonnateur"];
   }
 

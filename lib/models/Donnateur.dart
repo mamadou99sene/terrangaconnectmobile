@@ -3,18 +3,18 @@ class Donnateur {
   late String email;
   late String telephone;
   late double score;
-  late String profile;
+  late String? profile;
   Donnateur(
       {required this.id,
       required this.email,
       required this.telephone,
       required this.score,
-      required this.profile});
+      this.profile});
   Donnateur.fromJson(dynamic jsonData) {
     id = jsonData["id"];
     email = jsonData["email"];
     telephone = jsonData["telephone"];
     score = jsonData["score"];
-    profile = jsonData["profile"];
+    profile = (jsonData["profile"] ?? '');
   }
 }
