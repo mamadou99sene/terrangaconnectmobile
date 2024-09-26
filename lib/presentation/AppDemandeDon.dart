@@ -7,14 +7,12 @@ import 'package:terangaconnect/models/DemandeDonSang.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/AppEvent.dart';
 import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/presentation/assistance/Assistance.dart';
 import 'package:terangaconnect/presentation/details/DemandeDon_Sang_Details.dart';
 import 'package:terangaconnect/services/DemandeDonSangService.dart';
-import 'package:terangaconnect/theme/custom_text_style.dart';
-import 'package:terangaconnect/widgets/DemandeDonSangItem.dart';
 import 'package:terangaconnect/widgets/DemandeSangItemWithImages.dart';
 import 'package:terangaconnect/widgets/MyDrawer.dart';
 import 'package:terangaconnect/widgets/publication_button.dart';
-import '../core/utils/image_constant.dart';
 import '../widgets/app_bar/appbar_leading_image.dart';
 import '../widgets/app_bar/appbar_title.dart';
 import '../widgets/app_bar/custom_app_bar.dart';
@@ -28,7 +26,7 @@ class AppDemandeDonSang extends StatefulWidget {
 }
 
 class _AppemandeDonSangState extends State<AppDemandeDonSang> {
-  String selectedCategory = 'Dons';
+  String selectedCategory = 'Demande sang';
   late List<Demandedonsang> demandes = [];
   late List<Demandedonsang> filterdDemandes = [];
   TextEditingController searchController = TextEditingController();
@@ -170,11 +168,16 @@ class _AppemandeDonSangState extends State<AppDemandeDonSang> {
                                 utilisateur: widget.utilisateur,
                               )));
                 }),
-                _buildBottomButtonIcon("Dons", Icons.favorite, () {}),
+                _buildBottomButtonIcon("Demande sang", Icons.favorite, () {
+                  _loadDonsSang();
+                }),
                 _buildBottomButtonIcon("Assistance", Icons.assistant, () {
-                  setState(() {
-                    selectedCategory = "Assistance";
-                  });
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Assistance(
+                                utilisateur: widget.utilisateur,
+                              )));
                 }),
               ],
             ),
@@ -295,9 +298,19 @@ class _AppemandeDonSangState extends State<AppDemandeDonSang> {
   } */
   Widget _buildItemsList(BuildContext context, List<Demandedonsang> demandes) {
     if (demandes.isEmpty) {
-      return Center(child: Text("Aucun évènement trouvé"));
+      return Center(
+          child: Text(
+        "Aucune demande de sang trouvée",
+        style: theme.textTheme.titleMedium,
+      ));
     }
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) {
+        return Divider(
+          color: Colors.grey[200],
+          thickness: 1.0,
+        );
+      },
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: demandes.length,
@@ -308,7 +321,9 @@ class _AppemandeDonSangState extends State<AppDemandeDonSang> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => DemandedonSangDetails(
-                        demandedonsang: demandes[index])));
+                          demandedonsang: demandes[index],
+                          utilisateur: widget.utilisateur,
+                        )));
           },
           child: Demandesangitemwithimages(
             demandedonsang: demandes[index],

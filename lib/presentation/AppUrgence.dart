@@ -5,6 +5,7 @@ import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/AppDemandeDon.dart';
 import 'package:terangaconnect/presentation/AppEvent.dart';
+import 'package:terangaconnect/presentation/assistance/Assistance.dart';
 import 'package:terangaconnect/presentation/details/Urgence_Details.dart';
 import 'package:terangaconnect/presentation/mon_profile/Mon_Profile.dart';
 import 'package:terangaconnect/services/UrgenceSocialeService.dart';
@@ -37,9 +38,6 @@ class _AppUrgenceState extends State<AppUrgence> {
 
   Future<void> _loadUrgences() async {
     allUrgences = await Urgencesocialeservice().getAllUrgenceSociales();
-    setState(() {
-      filteredUrgences = allUrgences;
-    });
   }
 
   void _filterUrgences(String query) {
@@ -86,7 +84,7 @@ class _AppUrgenceState extends State<AppUrgence> {
                         ),
                       );
                     } else {
-                      return _buildItemsList(context, filteredUrgences);
+                      return _buildItemsList(context, allUrgences);
                     }
                   },
                 ),
@@ -155,7 +153,9 @@ class _AppUrgenceState extends State<AppUrgence> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildBottomButtonIcon("Urgences", Icons.warning, () {}),
+                _buildBottomButtonIcon("Urgences", Icons.warning, () {
+                  _loadUrgences();
+                }),
                 _buildBottomButtonIcon("Événements", Icons.event, () {
                   Navigator.push(
                       context,
@@ -164,7 +164,7 @@ class _AppUrgenceState extends State<AppUrgence> {
                                 utilisateur: widget.utilisateur,
                               )));
                 }),
-                _buildBottomButtonIcon("Dons", Icons.favorite, () {
+                _buildBottomButtonIcon("Demande sang", Icons.favorite, () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -173,9 +173,12 @@ class _AppUrgenceState extends State<AppUrgence> {
                               )));
                 }),
                 _buildBottomButtonIcon("Assistance", Icons.assistant, () {
-                  setState(() {
-                    selectedCategory = "Assistance";
-                  });
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Assistance(
+                                utilisateur: widget.utilisateur,
+                              )));
                 }),
               ],
             ),
@@ -267,7 +270,11 @@ class _AppUrgenceState extends State<AppUrgence> {
 
   Widget _buildItemsList(BuildContext context, List<Urgencesociale> urgences) {
     if (urgences.isEmpty) {
-      return Center(child: Text("Aucun évènement trouvé"));
+      return Center(
+          child: Text(
+        "Aucune urgence trouvée",
+        style: theme.textTheme.titleMedium,
+      ));
     }
     return ListView.separated(
       separatorBuilder: (context, index) {
@@ -285,8 +292,10 @@ class _AppUrgenceState extends State<AppUrgence> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        UrgenceDetails(urgencesociale: urgences[index])));
+                    builder: (context) => UrgenceDetails(
+                          urgencesociale: urgences[index],
+                          utilisateur: widget.utilisateur,
+                        )));
           },
           child: Urgenceitemwithimages(urgence: urgences[index]),
         );

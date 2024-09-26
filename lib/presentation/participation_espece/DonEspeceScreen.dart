@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:terangaconnect/core/app_export.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
 
 class Donespecescreen extends StatelessWidget {
-  const Donespecescreen({super.key});
+  late String declarationId;
+  late Utilisateur utilisateur;
+  Donespecescreen({required this.declarationId, required this.utilisateur});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +25,9 @@ class Donespecescreen extends StatelessWidget {
                   Positioned(
                       top: 56,
                       left: 91,
-                      child: Text(
-                        'Meci de choisir un operateur',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: Color.fromRGBO(255, 122, 48, 1),
-                            fontFamily: 'Nunito Sans',
-                            fontSize: 22,
-                            letterSpacing:
-                                0 /*percentages not used in flutter. defaulting to zero*/,
-                            fontWeight: FontWeight.normal,
-                            height: 1.3636363636363635),
-                      )),
+                      child: Text('Meci de choisir un operateur',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineLarge)),
                   Positioned(
                       top: 201,
                       left: 19,

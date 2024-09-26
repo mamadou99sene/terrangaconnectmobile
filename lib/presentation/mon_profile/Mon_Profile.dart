@@ -7,6 +7,7 @@ import 'package:terangaconnect/widgets/custom_bottom_bar.dart';
 
 import '../../core/app_export.dart';
 
+// MonProfile Widget
 class MonProfile extends StatelessWidget {
   final Utilisateur utilisateur;
 
@@ -15,7 +16,7 @@ class MonProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => Monprofileprovider(),
+      create: (_) => Monprofileprovider(utilisateur),
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -34,18 +35,11 @@ class MonProfile extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                ProfileHeader(
-                  utilisateur: utilisateur,
-                ),
+                 ProfileHeader(),
                 SizedBox(height: 20),
-                UploaderCard(
-                  utilisateur: utilisateur,
-                  ontap: () {},
-                ),
+                UploaderCard(ontap: (){},utilisateur: utilisateur,),
                 SizedBox(height: 20),
-                ActionList(
-                  utilisateur: utilisateur,
-                ),
+                ActionList(utilisateur: utilisateur,),
                 Spacer(),
                 LogoutButton(
                   onTap: () async {},
@@ -58,49 +52,41 @@ class MonProfile extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget buildBottomBar(BuildContext context) {
-    return CustomBottomBar(
-      onChanged: (BottomBarEnum type) {
-        switch (type) {
-          case BottomBarEnum.Explorer:
-            break;
-          case BottomBarEnum.Publication:
-            break;
-          case BottomBarEnum.MesAnnonces:
-            break;
-          case BottomBarEnum.MonProfil:
-            break;
-          default:
-            print("Type non pris en charge");
-        }
-      },
-    );
-  }
+Widget buildBottomBar(BuildContext context) {
+  return CustomBottomBar(
+    onChanged: (BottomBarEnum type) {
+      switch (type) {
+        case BottomBarEnum.Explorer:
+          break;
+        case BottomBarEnum.Publication:
+          break;
+        case BottomBarEnum.MesAnnonces:
+          break;
+        case BottomBarEnum.MonProfil:
+          break;
+        default:
+          print("Type non pris en charge");
+      }
+    },
+  );
 }
 
 class ProfileHeader extends StatelessWidget {
-  final Utilisateur utilisateur;
-  
-  ProfileHeader({required this.utilisateur});
-
   @override
   Widget build(BuildContext context) {
     return Consumer<Monprofileprovider>(
-      builder: (context, imageNotifier, child) {
-        if (imageNotifier.utilisateur == null) {
-          imageNotifier.loadProfileImage(utilisateur);
-        }
-
+      builder: (context, provider, child) {
         return Column(
           children: [
             Row(
               children: [
                 Stack(
                   children: [
-                    if (imageNotifier.isLoading)
+                    if (provider.isLoading)
                       SpinKitFadingCircle(color: Colors.green)
-                    else if (imageNotifier.profileImage == null)
+                    else if (provider.profileImage == null)
                       CustomImageView(
                         fit: BoxFit.cover,
                         imagePath: ImageConstant.imgEllipse6363,
@@ -111,20 +97,21 @@ class ProfileHeader extends StatelessWidget {
                     else
                       CircleAvatar(
                         radius: 40.h,
-                        backgroundImage: MemoryImage(imageNotifier.profileImage!),
+                        backgroundImage: MemoryImage(provider.profileImage!),
                       ),
                     Positioned(
                       right: 0,
                       bottom: 0,
                       child: GestureDetector(
-                        onTap: () => _showImageSourceActionSheet(context, imageNotifier),
+                        onTap: () => _showImageSourceActionSheet(context),
                         child: Container(
                           padding: EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: Colors.green,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                          child: Icon(Icons.camera_alt,
+                              color: Colors.white, size: 20),
                         ),
                       ),
                     ),
@@ -136,13 +123,13 @@ class ProfileHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${imageNotifier.utilisateur?.email ?? utilisateur.email}",
+                        provider.utilisateur?.email ?? "",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineLarge,
                       ),
                       Text(
-                        imageNotifier.utilisateur?.telephone ?? utilisateur.telephone,
+                        provider.utilisateur?.telephone ?? "",
                         style: theme.textTheme.titleLarge,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -152,12 +139,12 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ],
             ),
-            if (imageNotifier.error != null)
+            if (provider.error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  imageNotifier.error!,
-                  style: TextStyle(color: Colors.red),
+                  provider.error!,
+                  style: theme.textTheme.bodyLarge,
                 ),
               ),
           ],
@@ -166,7 +153,8 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  void _showImageSourceActionSheet(BuildContext context, Monprofileprovider imageNotifier) {
+  void _showImageSourceActionSheet(BuildContext context) {
+    final provider = Provider.of<Monprofileprovider>(context, listen: false);
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -179,7 +167,7 @@ class ProfileHeader extends StatelessWidget {
                 title: Text('Choisir depuis la galerie'),
                 onTap: () {
                   Navigator.pop(context);
-                  imageNotifier.pickAndSaveImage(ImageSource.gallery);
+                  provider.pickAndSaveImage(ImageSource.gallery);
                 },
               ),
               ListTile(
@@ -187,7 +175,7 @@ class ProfileHeader extends StatelessWidget {
                 title: Text('Prendre une photo'),
                 onTap: () {
                   Navigator.pop(context);
-                  imageNotifier.pickAndSaveImage(ImageSource.camera);
+                  provider.pickAndSaveImage(ImageSource.camera);
                 },
               ),
             ],
@@ -197,6 +185,7 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 }
+
 class UploaderCard extends StatelessWidget {
   late Utilisateur utilisateur;
   VoidCallback ontap;

@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/Evenement.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/AppEvent.dart';
 import 'package:terangaconnect/presentation/publication_evenement/provider/PublicationEvenementProvider.dart';
-import 'package:terangaconnect/presentation/publication_urgence/PublicationUrgence.dart';
 import 'package:terangaconnect/services/EvenementService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
@@ -131,7 +131,7 @@ class Publicationevenement extends StatelessWidget {
           selector: (context, provider) => provider.descriptionEventController,
           builder: (context, descriptionController, child) {
             return CustomTextFormField(
-              controller: descriptionController,
+              controller: controllerDescription,
               hintText: "Description de l'evenement ici".tr,
               maxLines: 5,
               validator: (value) {
@@ -402,9 +402,8 @@ class Publicationevenement extends StatelessWidget {
           String lieu = controllerLieu.text;
           String type = provider.getTypeEvent!;
           List<File> images = provider.selectedImages;
-          DateTime startDate =
-              DateTime.parse(provider.startDateController.text);
-          DateTime endDate = DateTime.parse(provider.endDateController.text);
+          DateTime startDate = DateTime.parse(controllerStartDate.text);
+          DateTime endDate = DateTime.parse(controllerEndDate.text);
           Evenement evenement = Evenement(
               titre: titre,
               description: description,
@@ -414,33 +413,49 @@ class Publicationevenement extends StatelessWidget {
               dateDebut: startDate,
               dateFin: endDate);
 
-          print(type);
+          BuildContext? dialogContext;
           showDialog(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return Center(
-                  child: SpinKitCircle(
-                color: Colors.green,
-                size: 50,
-              ));
+              dialogContext = context;
+              return WillPopScope(
+                onWillPop: () async => false,
+                child: Center(
+                    child: SpinKitCircle(
+                  color: Colors.green,
+                  size: 50,
+                )),
+              );
             },
           );
           try {
             bool savedEvent =
                 await Evenementservice().saveEvenement(evenement, images);
+            if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+              Navigator.pop(dialogContext!);
+            }
             if (savedEvent == true) {
               String message =
                   "événement envoyé, un moderateur vous contactera pour la validation.";
-              showConfirmationDialog(context, message);
+              showConfirmationDialog(context, message, () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AppEvent(
+                              utilisateur: utilisateur,
+                            )));
+              });
             } else {
               String title = "Publication non envoyée";
               String message = "Merci de ressayer !!!";
               showRejecteddialogDialog(context, title, message);
             }
-            Navigator.of(context).pop();
           } catch (e) {
-            Navigator.of(context).pop();
+            if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+              Navigator.pop(dialogContext!);
+            }
 
             // Afficher une erreur
             ScaffoldMessenger.of(context).showSnackBar(

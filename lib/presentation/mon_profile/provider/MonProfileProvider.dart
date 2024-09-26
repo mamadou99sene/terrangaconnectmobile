@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/services/UtilisateurService.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 
+// Monprofileprovider
 class Monprofileprovider extends ChangeNotifier {
   Uint8List? _profileImage;
   bool _isLoading = false;
@@ -17,16 +18,22 @@ class Monprofileprovider extends ChangeNotifier {
 
   final Utilisateurservice _utilisateurService = Utilisateurservice();
 
-  Future<void> loadProfileImage(Utilisateur utilisateur) async {
+  Monprofileprovider(Utilisateur utilisateur) {
+    _utilisateur = utilisateur;
+    loadProfileImage();
+  }
+
+  Future<void> loadProfileImage() async {
+    if (_utilisateur == null) return;
+
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _profileImage = await _utilisateurService.getUserProfile(utilisateur);
-      _utilisateur = utilisateur;
+      _profileImage = await _utilisateurService.getUserProfile(_utilisateur!);
     } catch (e) {
-      _error = 'Erreur lors du chargement de l\'image de profil: $e';
+      _error = 'Ajouter votre profile :';
       print(_error);
     }
 
@@ -51,10 +58,11 @@ class Monprofileprovider extends ChangeNotifier {
 
       try {
         final imageBytes = await pickedFile.readAsBytes();
-        
+
         // Envoyer l'image au backend
-        Utilisateur? updatedUtilisateur = await _utilisateurService.saveProfile(utilisateur!, imageBytes);
-        
+        Utilisateur? updatedUtilisateur =
+            await _utilisateurService.saveProfile(_utilisateur!, imageBytes);
+
         if (updatedUtilisateur != null) {
           _profileImage = imageBytes;
           _utilisateur = updatedUtilisateur;

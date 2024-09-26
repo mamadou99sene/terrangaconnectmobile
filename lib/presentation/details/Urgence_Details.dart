@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/control/Control.dart';
 import 'package:terangaconnect/models/UrgenceSociale.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/core/app_export.dart';
@@ -10,7 +10,8 @@ import 'package:terangaconnect/widgets/participation_widget.dart';
 
 class UrgenceDetails extends StatefulWidget {
   final Urgencesociale urgencesociale;
-  UrgenceDetails({required this.urgencesociale});
+  late Utilisateur utilisateur;
+  UrgenceDetails({required this.urgencesociale, required this.utilisateur});
 
   @override
   State<UrgenceDetails> createState() => _UrgenceDetailsState();
@@ -118,18 +119,22 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          icon: Icon(Icons.message, color: Colors.green),
+          icon: Icon(Icons.message_outlined, color: Colors.black54),
           onPressed: () => Control().launchWhatsApp(
               context, widget.urgencesociale.demandeur!.telephone),
         ),
         IconButton(
-          icon: Icon(Icons.comment, color: Colors.blue),
+          icon: Icon(Icons.comment_outlined, color: Colors.black54),
           onPressed: () {
             // TODO: Implémenter la fonctionnalité de commentaire
           },
         ),
         IconButton(
-          icon: Icon(Icons.share, color: Colors.orange),
+          icon: Icon(Icons.volunteer_activism_sharp, color: Colors.black54),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.share, color: Colors.black54),
           onPressed: () => Control().shareUrgence(widget.urgencesociale),
         ),
       ],
@@ -234,7 +239,8 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
   Widget _buildButtonParticipation(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () {
-        showUrgenceParticipationDialog(context, widget.urgencesociale);
+        showUrgenceParticipationDialog(
+            context, widget.urgencesociale.id!, widget.utilisateur);
       },
       height: 54.v,
       isDisabled: false,

@@ -4,28 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/core/app_export.dart';
-import 'package:terangaconnect/models/DemandeDonSang.dart';
+import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
-import 'package:terangaconnect/presentation/AppDemandeDon.dart';
-import 'package:terangaconnect/presentation/publication_demande_don_sang/provider/PublicationDemandeDonSangProvider.dart';
-import 'package:terangaconnect/presentation/publication_evenement/PublicationEvenement.dart';
-import 'package:terangaconnect/services/DemandeDonSangService.dart';
+import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/presentation/participation_materiel/provider/Participation_Materiel_Provider.dart';
+import 'package:terangaconnect/services/DonMaterielService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
 import 'package:terangaconnect/widgets/RejectedDialog.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/widgets/custom_text_form_field.dart';
 
-// ignore: must_be_immutable
-class Publicationdemandedonsang extends StatelessWidget {
+class ParticipationMateriel extends StatelessWidget {
+  late String declarationId;
   late Utilisateur utilisateur;
-  Publicationdemandedonsang({required this.utilisateur});
+  ParticipationMateriel(
+      {required this.declarationId, required this.utilisateur});
   TextEditingController controllerTitre = TextEditingController();
-  TextEditingController controllerDescription = TextEditingController();
-  TextEditingController controllerAdresse = TextEditingController();
-  TextEditingController controllerClasse = TextEditingController();
-  TextEditingController controllerRhesus = TextEditingController();
+  TextEditingController controllerDescritpion = TextEditingController();
+  TextEditingController controllerDuree = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,25 +61,18 @@ class Publicationdemandedonsang extends StatelessWidget {
                   ),
                   SizedBox(height: 18.v),
                   Text(
-                    "pbl_dmnd".tr,
+                    "part_".tr,
                     style: theme.textTheme.titleLarge,
-                    textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 43.v),
-                  _buildDemandeDonSangTitle(context),
+                  _buildDonMaterielTitle(context),
                   SizedBox(height: 12.v),
-                  _buildDemandedonsangDescription(context),
+                  _buildDonDescription(context),
                   SizedBox(height: 29.v),
-                  _buildDemandeDonSangAdresse(context),
-                  SizedBox(height: 29.v),
-                  _buildClasseDemandedonSang(context),
-                  SizedBox(height: 29.v),
-                  _buildRhesusDemandedonSang(context),
-                  SizedBox(height: 29.v),
-                  _buildImagesDemandedonSang(context),
+                  _buildImagesDonMateriel(context),
                   SizedBox(height: 29.v),
                   SizedBox(height: 21.v),
-                  _buildPublishDemandeButton(context)
+                  _buildValidDonMaterielButton(context)
                 ],
               ),
             ),
@@ -90,9 +82,9 @@ class Publicationdemandedonsang extends StatelessWidget {
     );
   }
 
-  Widget _buildDemandeDonSangTitle(BuildContext context) {
-    return Selector<Publicationdemandedonsangprovider, TextEditingController?>(
-      selector: (context, provider) => provider.titreEventController,
+  Widget _buildDonMaterielTitle(BuildContext context) {
+    return Selector<ParticipationMaterielProvider, TextEditingController?>(
+      selector: (context, provider) => provider.titrePretController,
       builder: (context, articleController, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,15 +92,15 @@ class Publicationdemandedonsang extends StatelessWidget {
             Container(
                 padding: EdgeInsets.only(bottom: 12.v),
                 child: Text(
-                  "Titre de la demande".tr,
+                  "Titre de ce que vous donner".tr,
                   style: TextStyle(fontWeight: FontWeight.w500),
                 )),
             CustomTextFormField(
               controller: controllerTitre,
-              hintText: "Titre de la demande".tr,
+              hintText: "Titre de votre don".tr,
               validator: (value) {
                 if (value!.trim().isEmpty) {
-                  return "dmnd_ttl".tr;
+                  return "le titre".tr;
                 }
                 return null;
               },
@@ -119,20 +111,20 @@ class Publicationdemandedonsang extends StatelessWidget {
     );
   }
 
-  Widget _buildDemandedonsangDescription(BuildContext context) {
+  Widget _buildDonDescription(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Description de la demande de sang ...",
+          "Description de ce que vous donner ...",
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
-        Selector<Publicationdemandedonsangprovider, TextEditingController?>(
-          selector: (context, provider) => provider.descriptionEventController,
+        Selector<ParticipationMaterielProvider, TextEditingController?>(
+          selector: (context, provider) => provider.descriptionPretController,
           builder: (context, descriptionController, child) {
             return CustomTextFormField(
-              controller: controllerDescription,
-              hintText: "Description de la demande".tr,
+              controller: controllerDescritpion,
+              hintText: "Description de votre don ici".tr,
               maxLines: 5,
               validator: (value) {
                 if (value!.trim().isEmpty) {
@@ -147,41 +139,14 @@ class Publicationdemandedonsang extends StatelessWidget {
     );
   }
 
-  Widget _buildDemandeDonSangAdresse(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Adresse du bénéficiaire",
-          style: TextStyle(fontWeight: FontWeight.w500),
-        ),
-        Selector<Publicationdemandedonsangprovider, TextEditingController?>(
-          selector: (context, provider) => provider.adresseEventController,
-          builder: (context, localiteController, child) {
-            return CustomTextFormField(
-              controller: controllerAdresse,
-              hintText: "adrs_bnf".tr,
-              validator: (value) {
-                if (value!.trim().isEmpty) {
-                  return "adrs".tr;
-                }
-                return null;
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImagesDemandedonSang(BuildContext context) {
-    return Consumer<Publicationdemandedonsangprovider>(
+  Widget _buildImagesDonMateriel(BuildContext context) {
+    return Consumer<ParticipationMaterielProvider>(
       builder: (context, imageProvider, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Image de preuve",
+              "Image illustative pour le don",
               style: TextStyle(fontWeight: FontWeight.w500),
             ),
             Container(
@@ -272,130 +237,27 @@ class Publicationdemandedonsang extends StatelessWidget {
     );
   }
 
-  Widget _buildClasseDemandedonSang(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Text(
-        //   "Type de l'urgence",
-        //   style: TextStyle(fontWeight: FontWeight.w500),
-        // ),
-        Selector<Publicationdemandedonsangprovider, String?>(
-          selector: (context, provider) => provider.getClasse,
-          builder: (context, selectedTypeAnnonce, child) {
-            return DropdownButtonFormField<String>(
-              icon: Icon(
-                Icons.bloodtype_rounded,
-                color: Colors.red,
-              ),
-              dropdownColor: Colors.white,
-              decoration: InputDecoration(
-                  label: Text(
-                    "Selectionner la classe de sang",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.green, style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(10))),
-              value: selectedTypeAnnonce,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              hint: Text("Sélectionner la classe à demander"),
-              onChanged: (String? newValue) {
-                context
-                    .read<Publicationdemandedonsangprovider>()
-                    .setClasse(newValue!);
-              },
-              items: <String>['A', 'B', 'AB', 'O']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRhesusDemandedonSang(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Selector<Publicationdemandedonsangprovider, String?>(
-          selector: (context, provider) => provider.getRhesus(),
-          builder: (context, selectedTypeAnnonce, child) {
-            return DropdownButtonFormField<String>(
-              icon: Icon(
-                Icons.post_add_outlined,
-                color: Colors.red,
-              ),
-              dropdownColor: Colors.white,
-              decoration: InputDecoration(
-                  label: Text(
-                    "Selectionner le rhesus",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Colors.green, style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(10))),
-              value: selectedTypeAnnonce,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              hint: Text("Sélectionner le rhésus"),
-              onChanged: (String? newValue) {
-                context
-                    .read<Publicationdemandedonsangprovider>()
-                    .setRhesus(newValue!);
-              },
-              items: <String>['POSITIF', 'NEGATIF']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
   Future<void> _pickImage(BuildContext context) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      final imageProvider = context.read<Publicationdemandedonsangprovider>();
+      final imageProvider = context.read<ParticipationMaterielProvider>();
       imageProvider.addImage(File(pickedFile.path));
     }
   }
 
-  Widget _buildPublishDemandeButton(BuildContext context) {
+  Widget _buildValidDonMaterielButton(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
           //recuperation des entrées utilisateur
-          final provider = Provider.of<Publicationdemandedonsangprovider>(
-              context,
+          final provider = Provider.of<ParticipationMaterielProvider>(context,
               listen: false);
           String titre = controllerTitre.text;
-          String description = controllerDescription.text;
-          String adresse = controllerAdresse.text;
-          String classe = provider.getClasse!;
-          String rhesus = provider.getRhesus()!;
+          String description = controllerDescritpion.text;
           List<File> images = provider.selectedImages;
-          //instanciation objet
-          Demandedonsang demande = Demandedonsang(
-              titre: titre,
-              description: description,
-              demandeurId: utilisateur.id!,
-              adresse: adresse,
-              classe: classe,
-              rhesus: rhesus);
+
           BuildContext? dialogContext;
           showDialog(
             context: context,
@@ -412,27 +274,32 @@ class Publicationdemandedonsang extends StatelessWidget {
               );
             },
           );
+          Donmateriel donmateriel = Donmateriel(
+              type: 'MATERIEL',
+              declarationId: declarationId,
+              donateurId: utilisateur.id!,
+              titre: titre,
+              description: description);
           try {
-            //appel service
-            bool saved = await Demandedonsangservice()
-                .saveDemandedonSang(demande, images);
+            bool savedDonMateriel = await Donmaterielservice()
+                .saveDonMaterielwithImages(donmateriel, images);
             if (dialogContext != null && Navigator.canPop(dialogContext!)) {
               Navigator.pop(dialogContext!);
             }
-            if (saved == true) {
+            if (savedDonMateriel == true) {
               String message =
-                  "demande de sang envoyée, un moderateur vous contactera pour la validation.";
+                  "don envoyé, Merci beaucoup pour votre intervention.";
               showConfirmationDialog(context, message, () {
                 Navigator.of(context).pop();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AppDemandeDonSang(
+                        builder: (context) => AppUrgence(
                               utilisateur: utilisateur,
                             )));
               });
             } else {
-              String title = "Publication non envoyée";
+              String title = "Don Materiel Rejeté";
               String message = "Merci de ressayer !!!";
               showRejecteddialogDialog(context, title, message);
             }
@@ -440,6 +307,7 @@ class Publicationdemandedonsang extends StatelessWidget {
             if (dialogContext != null && Navigator.canPop(dialogContext!)) {
               Navigator.pop(dialogContext!);
             }
+
             // Afficher une erreur
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Erreur de connexion !!! Retentez")),
@@ -449,7 +317,7 @@ class Publicationdemandedonsang extends StatelessWidget {
           print("Invalid");
       },
       height: 54.v,
-      text: "Publier la demande".tr,
+      text: "Valider votre don".tr,
       buttonStyle: CustomButtonStyles.fillPrimary,
     );
   }

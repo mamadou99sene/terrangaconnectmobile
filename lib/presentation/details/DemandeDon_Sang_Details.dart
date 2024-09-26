@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/control/Control.dart';
 import 'package:terangaconnect/models/DemandeDonSang.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/participation_don_sang/Participation_don_sang.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/core/app_export.dart';
 
 class DemandedonSangDetails extends StatefulWidget {
   late Demandedonsang demandedonsang;
-  DemandedonSangDetails({required this.demandedonsang});
+  late Utilisateur utilisateur;
+  DemandedonSangDetails(
+      {required this.demandedonsang, required this.utilisateur});
   @override
   State<DemandedonSangDetails> createState() => _DemandedonSangDetailsState();
 }
@@ -73,28 +76,13 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
   Widget _buildButton(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return Center(
-                child: SpinKitCircle(
-              color: Colors.green,
-              size: 50,
-            ));
-          },
-        );
-        try {
-          //instaciation
-          Navigator.of(context).pop();
-        } catch (e) {
-          Navigator.of(context).pop();
-
-          // Afficher une erreur
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur de connexion !!! Retentez")),
-          );
-        }
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ParticipationDonSang(
+                      declarationId: widget.demandedonsang.id!,
+                      utilisateur: widget.utilisateur,
+                    )));
       },
       height: 54.v,
       isDisabled: false,
@@ -102,7 +90,7 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
       buttonStyle: CustomButtonStyles.fillPrimary,
     );
   }
-  
+
   Widget _buildDemandeurInfo(BuildContext context) {
     return Row(
       children: [
@@ -130,8 +118,8 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
         ),
         CustomElevatedButton(
           text: 'Contacter',
-          onPressed: () =>
-              Control().launchWhatsApp(context,widget.demandedonsang.demandeur!.telephone),
+          onPressed: () => Control().launchWhatsApp(
+              context, widget.demandedonsang.demandeur!.telephone),
           width: 100,
           height: 40,
           buttonStyle: CustomButtonStyles.fillPrimary,
@@ -139,24 +127,24 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
       ],
     );
   }
+
   Widget _buildUDemandeSangHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       
         Text(
           widget.demandedonsang.titre,
           style: theme.textTheme.titleMedium,
-        ), 
+        ),
         SizedBox(height: 8),
         Text(
           "Classe Sang ${widget.demandedonsang.classe}",
           style: theme.textTheme.titleLarge!.copyWith(color: Colors.red),
         ),
-        
       ],
     );
   }
+
   Widget _buildImageDemande(BuildContext context) {
     List<String> images = widget.demandedonsang.images!
         .map((imageUrl) => API.URL + imageUrl.substring(22))
@@ -207,24 +195,27 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          icon: Icon(Icons.message, color: Colors.green),
+          icon: Icon(Icons.message, color: Colors.black54),
           onPressed: () => Control().launchWhatsApp(
               context, widget.demandedonsang.demandeur!.telephone),
         ),
         IconButton(
-          icon: Icon(Icons.comment, color: Colors.blue),
+          icon: Icon(Icons.comment, color: Colors.black54),
           onPressed: () {
             // TODO: Implémenter la fonctionnalité de commentaire
           },
         ),
         IconButton(
-          icon: Icon(Icons.share, color: Colors.orange),
+          icon: Icon(Icons.volunteer_activism_sharp, color: Colors.black54),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.share, color: Colors.black54),
           onPressed: () => Control().shareDemandedonsang(widget.demandedonsang),
         ),
       ],
     );
   }
-
 
   Widget _buildDemandeDetails(BuildContext context) {
     return Column(
@@ -233,13 +224,16 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
         Wrap(
           spacing: 8,
           children: [
-            _buildChip(context,Icons.location_on, widget.demandedonsang.adresse),
-            _buildChip(context,
+            _buildChip(
+                context, Icons.location_on, widget.demandedonsang.adresse),
+            _buildChip(
+              context,
               Icons.access_time,
               Control().getDurationString(DateTime.now()
                   .difference(widget.demandedonsang.datePublication!)),
             ),
-            _buildChip(context,Icons.bloodtype_rounded, widget.demandedonsang.rhesus),
+            _buildChip(
+                context, Icons.bloodtype_rounded, widget.demandedonsang.rhesus),
           ],
         ),
         SizedBox(height: 16),

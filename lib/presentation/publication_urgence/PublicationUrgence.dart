@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/AppUrgence.dart';
 import 'package:terangaconnect/presentation/publication_urgence/provider/PublicationUrgenceProvider.dart';
 import 'package:terangaconnect/services/UrgenceSocialeService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
@@ -410,7 +411,15 @@ class Publicationurgence extends StatelessWidget {
             if (savedurgence == true) {
               String message =
                   "Urgence envoyée, un moderateur vous contactera pour la validation.";
-              showConfirmationDialog(context, message);
+              showConfirmationDialog(context, message, () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AppUrgence(
+                              utilisateur: utilisateur,
+                            )));
+              });
             } else {
               String title = "Publication non envoyée";
               String message = "Merci de ressayer !!!";

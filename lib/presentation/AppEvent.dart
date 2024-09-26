@@ -6,6 +6,7 @@ import 'package:terangaconnect/models/Evenement.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/AppDemandeDon.dart';
 import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/presentation/assistance/Assistance.dart';
 import 'package:terangaconnect/presentation/details/Evenement_Details.dart';
 import 'package:terangaconnect/services/EvenementService.dart';
 import 'package:terangaconnect/theme/custom_text_style.dart';
@@ -188,8 +189,10 @@ class _AppEventState extends State<AppEvent> {
                                 utilisateur: widget.utilisateur,
                               )));
                 }),
-                _buildBottomButtonIcon("Événements", Icons.event, () {}),
-                _buildBottomButtonIcon("Dons", Icons.favorite, () {
+                _buildBottomButtonIcon("Événements", Icons.event, () {
+                  _loadEvenements();
+                }),
+                _buildBottomButtonIcon("Demande sang", Icons.favorite, () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -197,10 +200,13 @@ class _AppEventState extends State<AppEvent> {
                                 utilisateur: widget.utilisateur,
                               )));
                 }),
-               _buildBottomButtonIcon("Assistance", Icons.assistant, () {
-                  setState(() {
-                    selectedCategory = "Assistance";
-                  });
+                _buildBottomButtonIcon("Assistance", Icons.assistant, () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Assistance(
+                                utilisateur: widget.utilisateur,
+                              )));
                 }),
               ],
             ),
@@ -295,9 +301,19 @@ class _AppEventState extends State<AppEvent> {
   } */
   Widget _buildItemsList(BuildContext context, List<Evenement> evenements) {
     if (evenements.isEmpty) {
-      return Center(child: Text("Aucun évènement trouvé"));
+      return Center(
+          child: Text(
+        "Aucun évènement trouvé",
+        style: theme.textTheme.titleMedium,
+      ));
     }
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) {
+        return Divider(
+          color: Colors.grey[200],
+          thickness: 1.0,
+        );
+      },
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemCount: evenements.length,
@@ -307,8 +323,10 @@ class _AppEventState extends State<AppEvent> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        EvenementDetails(evenement: evenements[index])));
+                    builder: (context) => EvenementDetails(
+                          evenement: evenements[index],
+                          utilisateur: widget.utilisateur,
+                        )));
           },
           child: Eventitemwithimages(evenement: evenements[index]),
         );

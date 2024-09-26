@@ -3,13 +3,16 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/control/Control.dart';
 import 'package:terangaconnect/models/Evenement.dart';
+import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/core/app_export.dart';
+import 'package:terangaconnect/widgets/participation_widget.dart';
 
 class EvenementDetails extends StatefulWidget {
   late Evenement evenement;
-  EvenementDetails({required this.evenement});
+  late Utilisateur utilisateur;
+  EvenementDetails({required this.evenement, required this.utilisateur});
   @override
   State<EvenementDetails> createState() => _EvenementState();
 }
@@ -115,18 +118,22 @@ class _EvenementState extends State<EvenementDetails> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          icon: Icon(Icons.message, color: Colors.green),
+          icon: Icon(Icons.message, color: Colors.black54),
           onPressed: () => Control()
               .launchWhatsApp(context, widget.evenement.demandeur!.telephone),
         ),
         IconButton(
-          icon: Icon(Icons.comment, color: Colors.blue),
+          icon: Icon(Icons.comment, color: Colors.black54),
           onPressed: () {
             // TODO: Implémenter la fonctionnalité de commentaire
           },
         ),
         IconButton(
-          icon: Icon(Icons.share, color: Colors.orange),
+          icon: Icon(Icons.volunteer_activism_sharp, color: Colors.black54),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: Icon(Icons.share, color: Colors.black54),
           onPressed: () => Control().shareEvent,
         ),
       ],
@@ -218,28 +225,8 @@ class _EvenementState extends State<EvenementDetails> {
   Widget _buildButton(BuildContext context) {
     return CustomElevatedButton(
       onPressed: () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return Center(
-                child: SpinKitCircle(
-              color: Colors.green,
-              size: 50,
-            ));
-          },
-        );
-        try {
-          //instaciation
-          Navigator.of(context).pop();
-        } catch (e) {
-          Navigator.of(context).pop();
-
-          // Afficher une erreur
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur de connexion !!! Retentez")),
-          );
-        }
+        showUrgenceParticipationDialog(
+            context, widget.evenement.id!, widget.utilisateur);
       },
       height: 54.v,
       isDisabled: false,
