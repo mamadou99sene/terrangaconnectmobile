@@ -45,6 +45,8 @@ dependencies:
   connectivity_plus: ^6.0.5
   shared_preferences: ^2.2.2
   provider: ^6.1.1
+  url_launcher: ^6.0.20
+  share_plus: ^10.0.2
   flutter_localizations:
     sdk: flutter
 
@@ -86,17 +88,17 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Nunito Sans
-  #     fonts: 
-  #       - asset: assets/fonts/NunitoSansExtraBold.ttf
-  #         weight: 800
-  #       - asset: assets/fonts/NunitoSansBold.ttf
-  #         weight: 700
-  #       - asset: assets/fonts/NunitoSansSemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/NunitoSansRegular.ttf
-  #         weight: 400
+  fonts:
+    - family: Nunito Sans
+      fonts: 
+        - asset: assets/fonts/NunitoSansExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/NunitoSansBold.ttf
+          weight: 700
+        - asset: assets/fonts/NunitoSansSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NunitoSansRegular.ttf
+          weight: 400
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

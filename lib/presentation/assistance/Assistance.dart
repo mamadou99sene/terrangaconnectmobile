@@ -115,7 +115,7 @@ class Assistance extends StatelessWidget {
               color: Colors.black54,
             ),
             onPressed: () {
-              // Ajoutez ici la logique pour envoyer le message
+              // ici la logique pour envoyer le message
             },
           ),
         ],
