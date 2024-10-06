@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/control/Control.dart';
 import 'package:terangaconnect/models/DemandeDonSang.dart';
+import 'package:terangaconnect/models/DonSang.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/participation_don_sang/Participation_don_sang.dart';
+import 'package:terangaconnect/services/DonSangService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/core/app_export.dart';
@@ -207,7 +209,14 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
         ),
         IconButton(
           icon: Icon(Icons.volunteer_activism_sharp, color: Colors.black54),
-          onPressed: () {},
+          onPressed: () async {
+            print('##############Don de sang########################');
+            List<Donsang>? dons = await Donsangservice()
+                .getAllDonSangByDeclarationId(widget.demandedonsang.id!);
+            for (var d in dons!) {
+              print(d.toJson());
+            }
+          },
         ),
         IconButton(
           icon: Icon(Icons.share, color: Colors.black54),

@@ -50,4 +50,23 @@ class Donsangservice {
     }
     return savedDonSang;
   }
+
+  Future<List<Donsang>?> getAllDonSangByDeclarationId(
+      String declarationId) async {
+    List<Donsang> donsSang = [];
+    http.Response response = await http.get(
+        Uri.parse(
+            "${API.URL}${API.don_Service}declarations/${declarationId}/donsSang"),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+        }).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      for (var item in responseBody) {
+        Donsang don = Donsang.fromJson(item);
+        donsSang.add(don);
+      }
+    }
+    return donsSang;
+  }
 }

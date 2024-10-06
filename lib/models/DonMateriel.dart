@@ -27,10 +27,10 @@ class Donmateriel {
     type = jsonData["type"];
     declarationId = jsonData["declarationId"];
     donateurId = jsonData["donateurId"];
-    donnateur = jsonData["donnateur"];
+    donnateur = Donnateur.fromJson(jsonData["donnateur"]);
     titre = jsonData["titre"];
     description = jsonData["description"];
-    imagesDon = List.from(jsonData["images"]);
+    imagesDon = List.from(jsonData["imagesDon"]);
   }
 
   Map<String, dynamic> toJson() {

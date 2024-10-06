@@ -65,5 +65,6 @@ final Map<String, String> enUs = {
   "adrs": "adresse obligatoire",
   "lbl_urg_explorer": "Explorer les urgences",
   "lbl_ev_explorer": "Explorer les evenements",
-  "lbl_d_explorer": "Explorer les demandes de sang"
+  "lbl_d_explorer": "Explorer les demandes de sang",
+  "part_": "Votre Participation..."
 };

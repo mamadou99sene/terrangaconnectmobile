@@ -50,4 +50,23 @@ class Donespeceservice {
     }
     return savedDon;
   }
+
+  Future<List<Donespece>?> getAllDonEspeceByDeclarationId(
+      String declarationId) async {
+    List<Donespece> donsEspeces = [];
+    http.Response response = await http.get(
+        Uri.parse(
+            "${API.URL}${API.don_Service}declarations/${declarationId}/donsEspece"),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+        }).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      for (var item in responseBody) {
+        Donespece don = Donespece.fromJson(item);
+        donsEspeces.add(don);
+      }
+    }
+    return donsEspeces;
+  }
 }

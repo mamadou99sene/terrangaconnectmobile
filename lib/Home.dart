@@ -3,8 +3,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/presentation/connexion/Connexion.dart';
+import 'package:terangaconnect/presentation/connexion/provider/ConnexionProvider.dart';
 import 'package:terangaconnect/presentation/inscription/Inscription.dart';
 import 'package:terangaconnect/presentation/inscription/provider/InscriptionProvider.dart';
+import 'package:terangaconnect/presentation/participation_don_sang/provider/Participation_don_sang_provider.dart';
+import 'package:terangaconnect/presentation/participation_materiel/provider/Participation_Materiel_Provider.dart';
+import 'package:terangaconnect/presentation/participation_pret/provider/Participation_pret_provider.dart';
 import 'package:terangaconnect/presentation/publication_demande_don_sang/PublicationDemandeDonSang.dart';
 import 'package:terangaconnect/presentation/publication_demande_don_sang/provider/PublicationDemandeDonSangProvider.dart';
 import 'package:terangaconnect/presentation/publication_evenement/PublicationEvenement.dart';
@@ -28,6 +33,13 @@ class Home extends StatelessWidget {
                 create: (context) => Publicationevenementprovider()),
             ChangeNotifierProvider(
                 create: (context) => Publicationdemandedonsangprovider()),
+            ChangeNotifierProvider(
+                create: (context) => ParticipationPretProvider()),
+            ChangeNotifierProvider(
+                create: (context) => ParticipationMaterielProvider()),
+            ChangeNotifierProvider(
+                create: (context) => ParticipationDonSangProvider()),
+            ChangeNotifierProvider(create: (context) => Connexionprovider()),
           ],
           child: MaterialApp(
             theme: theme,
@@ -42,31 +54,16 @@ class Home extends StatelessWidget {
             supportedLocales: [Locale('en', '')],
             routes: {
               "/inscription": (context) => Inscription(),
-              '/publication': (context) => Publicationurgence(
-                    utilisateur: Utilisateur(
-                        id: '',
-                        email: 'email',
-                        telephone: 'telephone',
-                        roles: []),
-                  ),
-              "/event": (context) => Publicationevenement(
-                  utilisateur: Utilisateur(
-                      id: '',
-                      email: 'email',
-                      telephone: 'telephone',
-                      roles: [])),
-              "/don": (context) => Publicationdemandedonsang(
-                  utilisateur: Utilisateur(
-                      id: '',
-                      email: 'email',
-                      telephone: 'telephone',
-                      roles: []))
+              "/": (context) => Connexion(),
             },
-            //initialRoute: "/don",
-            home: AppUrgence(
+            initialRoute: "/",
+            /*  home: AppUrgence(
               utilisateur: Utilisateur(
-                  id: '7af3ea1d-4848-4261-9ed0-b4429dd5f244', email: 'senemamadou1999@gmail.com', telephone: '778340335', roles: []),
-            ),
+                  id: 'fd9020d0-f05c-4f37-87db-6dafda5a0795',
+                  email: 'senemamadou1999@gmail.com',
+                  telephone: '778340335',
+                  roles: []),
+            ), */
           ),
         );
       },

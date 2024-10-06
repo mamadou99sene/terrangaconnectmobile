@@ -35,11 +35,16 @@ class MonProfile extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                 ProfileHeader(),
+                ProfileHeader(),
                 SizedBox(height: 20),
-                UploaderCard(ontap: (){},utilisateur: utilisateur,),
+                UploaderCard(
+                  ontap: () {},
+                  utilisateur: utilisateur,
+                ),
                 SizedBox(height: 20),
-                ActionList(utilisateur: utilisateur,),
+                ActionList(
+                  utilisateur: utilisateur,
+                ),
                 Spacer(),
                 LogoutButton(
                   onTap: () async {},
@@ -198,8 +203,8 @@ class UploaderCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: ListTile(
           leading: Icon(Icons.image, color: Colors.green),
-          title: Text('changer votre profile',
-              style: theme.textTheme.displayLarge),
+          title: Text('Changer vos informations ...',
+              style: theme.textTheme.labelLarge),
           subtitle: Row(
             children: [
               Text(
@@ -231,7 +236,7 @@ class ActionList extends StatelessWidget {
         ActionItem(icon: Icons.campaign, title: 'Mes Publications', count: 2),
         SizedBox(height: 10),
         ActionItem(
-            icon: Icons.shopping_cart, title: 'Mes achats/demandes', count: 2),
+            icon: Icons.shopping_cart, title: 'Mes dons/demandes', count: 2),
         SizedBox(height: 10),
         ActionItem(
           icon: Icons.subscriptions,

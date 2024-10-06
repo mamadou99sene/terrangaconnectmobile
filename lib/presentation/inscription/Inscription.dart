@@ -6,13 +6,14 @@ import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/inscription/provider/InscriptionProvider.dart';
 import 'package:terangaconnect/services/UtilisateurService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
+import 'package:terangaconnect/widgets/ConfirmationDialog.dart';
+import 'package:terangaconnect/widgets/RejectedDialog.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/widgets/custom_icon_button.dart';
 import 'package:terangaconnect/widgets/custom_text_form_field.dart';
 
 class Inscription extends StatelessWidget {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late Utilisateur utilisateur;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -35,7 +36,7 @@ class Inscription extends StatelessWidget {
               children: [
                 SizedBox(height: 10.v),
                 CustomImageView(
-                  imagePath: ImageConstant.imgUserErrorcontainer,
+                  imagePath: ImageConstant.imageTeranga,
                   height: 76.v,
                   width: 87.h,
                 ),
@@ -63,7 +64,9 @@ class Inscription extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            NavigatorService.goBack();
+                          },
                           icon: Icon(
                             Icons.arrow_back,
                             color: theme.primaryColor,
@@ -169,7 +172,7 @@ class Inscription extends StatelessWidget {
               controller: provider.passwordInputController,
               hintText: "lbl_mot_de_passe".tr,
               textInputAction: TextInputAction.done,
-              textInputType: TextInputType.phone,
+              textInputType: TextInputType.visiblePassword,
               suffixIcon: IconButton(
                   onPressed: () {
                     value.change_Visibility();
@@ -204,29 +207,56 @@ class Inscription extends StatelessWidget {
                 provider.email = provider.emailInputController.text;
                 provider.telephone = provider.phoneInputController.text;
                 provider.password = provider.passwordInputController.text;
+                Utilisateur utilisateur = Utilisateur(
+                    email: provider.email,
+                    telephone: provider.telephone,
+                    password: provider.password,
+                    roles: ["USER"]);
+                BuildContext? dialogContext;
                 showDialog(
                   context: context,
                   barrierDismissible: false,
                   builder: (BuildContext context) {
-                    return Center(
-                        child: SpinKitCircle(
-                      color: Colors.green,
-                      size: 50,
-                    ));
+                    dialogContext = context;
+                    return WillPopScope(
+                      onWillPop: () async => false,
+                      child: Center(
+                          child: SpinKitCircle(
+                        color: Colors.green,
+                        size: 50,
+                      )),
+                    );
                   },
                 );
                 try {
-                  utilisateur = Utilisateur(
-                      email: provider.email,
-                      telephone: provider.telephone,
-                      password: provider.password,
-                      roles: ["USER"]);
                   Utilisateur? savedUser =
                       await Utilisateurservice().saveUtilisateur(utilisateur);
-                  Navigator.of(context).pop();
+                  if (dialogContext != null &&
+                      Navigator.canPop(dialogContext!)) {
+                    Navigator.pop(dialogContext!);
+                  }
+                  if (savedUser != null) {
+                    String message =
+                        "Inscription réussie, cliquer sur le lien qui a été envoyé a votre adresse mail pour activer votre compte";
+                    showConfirmationDialog(context, message, () {
+                      Navigator.of(context).pop();
+                      /*  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AppEvent(
+                                    utilisateur: utilisateur,
+                                  ))); */
+                    });
+                  } else {
+                    String title = "Inscription non réussie";
+                    String message = "Merci de ressayer !!!";
+                    showRejecteddialogDialog(context, title, message);
+                  }
                 } catch (e) {
-                  Navigator.of(context).pop();
-
+                  if (dialogContext != null &&
+                      Navigator.canPop(dialogContext!)) {
+                    Navigator.pop(dialogContext!);
+                  }
                   // Afficher une erreur
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Erreur de connexion !!! Retentez")),

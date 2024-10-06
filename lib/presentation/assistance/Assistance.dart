@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
@@ -16,31 +15,33 @@ class Assistance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset:
-          true, // Important pour éviter l'overflow quand le clavier apparaît
-      appBar: _buildAppBar(context),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 18.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        _buildMessages(),
-                      ],
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset:
+            true, // Important pour éviter l'overflow quand le clavier apparaît
+        appBar: _buildAppBar(context),
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: 18.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 20),
+                          _buildMessages(),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                _buildMessageInput(),
-              ],
-            );
-          },
+                  _buildMessageInput(),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -51,10 +52,10 @@ class Assistance extends StatelessWidget {
       children: [
         _buildMessageItem(
             "Je souhaite avoir des informations par rapport a la plateforme teranga connect",
-            "il y a 3 heures",
+            "il y a 3 minutes",
             isUserMessage: true),
         _buildMessageItem(
-            "Teranga conect est une plateforme communautaire Sénégalaise qui met en avant l'aspect de la hospitalité profondement ancrée dans l'esprit des sénégalais. Cette plateforme vous permet de declararer des urgences sociales a savoir des malades, des etudiants n'ayant pas de moyen pour s'inscrire, des evemenements.... Et permet aux utilisateurs d'appoter leur intervention",
+            "Teranga connect est une plateforme communautaire Sénégalaise qui met en avant l'aspect de la hospitalité profondement ancrée dans l'esprit des sénégalais. Cette plateforme vous permet de declararer des urgences sociales, a savoir des malades, des etudiants n'ayant pas de moyen pour s'inscrire, des evemenements.... Et permet aux utilisateurs d'apporter leurs interventions",
             "il y a 3 minutes",
             isUserMessage: false),
       ],

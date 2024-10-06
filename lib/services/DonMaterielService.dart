@@ -63,4 +63,23 @@ class Donmaterielservice {
     }
     return false;
   }
+
+  Future<List<Donmateriel>?> getAllDonMaterielByDeclarationId(
+      String declarationId) async {
+    List<Donmateriel> donsMateriels = [];
+    http.Response response = await http.get(
+        Uri.parse(
+            "${API.URL}${API.don_Service}declarations/${declarationId}/donsMateriel"),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+        }).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      for (var item in responseBody) {
+        Donmateriel don = Donmateriel.fromJson(item);
+        donsMateriels.add(don);
+      }
+    }
+    return donsMateriels;
+  }
 }

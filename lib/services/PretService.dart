@@ -62,4 +62,22 @@ class Pretservice {
     }
     return false;
   }
+
+  Future<List<Pret>?> getAllPretsByDeclarationId(String declarationId) async {
+    List<Pret> declarationPrets = [];
+    http.Response response = await http.get(
+        Uri.parse(
+            "${API.URL}${API.don_Service}declarations/${declarationId}/prets"),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+        }).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      for (var item in responseBody) {
+        Pret pret = Pret.fromJson(item);
+        declarationPrets.add(pret);
+      }
+    }
+    return declarationPrets;
+  }
 }

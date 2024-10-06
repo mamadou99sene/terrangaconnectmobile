@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:terangaconnect/core/utils/validation_functions.dart';
 
 class Inscriptionprovider extends ChangeNotifier {
   TextEditingController phoneInputController = TextEditingController();

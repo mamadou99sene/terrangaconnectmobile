@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/control/Control.dart';
+import 'package:terangaconnect/models/DonEspece.dart';
+import 'package:terangaconnect/models/DonMateriel.dart';
+import 'package:terangaconnect/models/Pret.dart';
 import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/services/DonEspeceService.dart';
+import 'package:terangaconnect/services/DonMaterielService.dart';
+import 'package:terangaconnect/services/PretService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import 'package:terangaconnect/core/app_export.dart';
@@ -131,7 +137,27 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
         ),
         IconButton(
           icon: Icon(Icons.volunteer_activism_sharp, color: Colors.black54),
-          onPressed: () {},
+          onPressed: () async {
+            print('##############Pret########################');
+            List<Pret>? prets = await Pretservice()
+                .getAllPretsByDeclarationId(widget.urgencesociale.id!);
+            for (var p in prets!) {
+              print(p.toJson());
+            }
+
+            print('##############Materiel########################');
+            List<Donmateriel>? materiels = await Donmaterielservice()
+                .getAllDonMaterielByDeclarationId(widget.urgencesociale.id!);
+            for (var materiel in materiels!) {
+              print(materiel.toJson());
+            }
+            print('##############Espece########################');
+            List<Donespece>? especes = await Donespeceservice()
+                .getAllDonEspeceByDeclarationId(widget.urgencesociale.id!);
+            for (var espece in especes!) {
+              print(espece.toJson());
+            }
+          },
         ),
         IconButton(
           icon: Icon(Icons.share, color: Colors.black54),
