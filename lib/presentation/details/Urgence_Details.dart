@@ -6,6 +6,7 @@ import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Pret.dart';
 import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/interventions/InterventionsDialog.dart';
 import 'package:terangaconnect/services/DonEspeceService.dart';
 import 'package:terangaconnect/services/DonMaterielService.dart';
 import 'package:terangaconnect/services/PretService.dart';
@@ -30,7 +31,10 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.urgencesociale.titre}"),
+        title: Text(
+          "${widget.urgencesociale.titre}",
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       body: Stack(
         children: [
@@ -157,6 +161,14 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
             for (var espece in especes!) {
               print(espece.toJson());
             }
+            showDialog(
+              context: context,
+              builder: (context) => InterventionsDialog(
+                especes: especes,
+                materiels: materiels,
+                prets: prets,
+              ),
+            );
           },
         ),
         IconButton(

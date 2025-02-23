@@ -10,7 +10,8 @@ class Evenementservice {
   Future<List<Evenement>> getAllEvents() async {
     List<Evenement> allEvents = [];
     http.Response response = await http.get(
-        Uri.parse("${API.URL}${API.declaration_Service}declarations/event"),
+        Uri.parse(
+            "${API.URL}${API.declaration_Service}declarations/event/admin"),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
@@ -53,7 +54,8 @@ class Evenementservice {
         request.files
             .add(await http.MultipartFile.fromPath('images', image.path));
       }
-      http.StreamedResponse response = await request.send().timeout(Duration(seconds: 30));
+      http.StreamedResponse response =
+          await request.send().timeout(Duration(seconds: 30));
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       }

@@ -7,6 +7,7 @@ import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Evenement.dart';
 import 'package:terangaconnect/models/Pret.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/interventions/InterventionsDialog.dart';
 import 'package:terangaconnect/services/DonEspeceService.dart';
 import 'package:terangaconnect/services/DonMaterielService.dart';
 import 'package:terangaconnect/services/PretService.dart';
@@ -156,6 +157,14 @@ class _EvenementState extends State<EvenementDetails> {
             for (var espece in especes!) {
               print(espece.toJson());
             }
+            showDialog(
+              context: context,
+              builder: (context) => InterventionsDialog(
+                especes: especes,
+                materiels: materiels,
+                prets: prets,
+              ),
+            );
           },
         ),
         IconButton(

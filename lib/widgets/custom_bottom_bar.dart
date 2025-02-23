@@ -51,13 +51,17 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     return Container(
       height: 90.v,
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(
-          25.h,
+        color: Colors.white.withOpacity(0.9), // Fond légèrement blanc
+        border: Border.all(
+          // Bordure sur tous les côtés
+          color: Colors.grey,
+          width: 1,
         ),
+        borderRadius: BorderRadius.circular(25.h),
       ),
       child: BottomNavigationBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors
+            .transparent, // Fond transparent pour laisser voir le Container parent
         showSelectedLabels: false,
         showUnselectedLabels: false,
         selectedFontSize: 0,
@@ -81,9 +85,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                   width: 71.h,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,
-                    borderRadius: BorderRadius.circular(
-                      5.h,
-                    ),
+                    borderRadius: BorderRadius.circular(5.h),
                   ),
                 ),
                 CustomImageView(

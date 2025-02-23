@@ -72,7 +72,7 @@ class Pretservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body);
+      var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       for (var item in responseBody) {
         Pret pret = Pret.fromJson(item);
         declarationPrets.add(pret);

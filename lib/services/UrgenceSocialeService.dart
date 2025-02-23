@@ -10,7 +10,8 @@ class Urgencesocialeservice {
   Future<List<Urgencesociale>> getAllUrgenceSociales() async {
     List<Urgencesociale> allUrgences = [];
     http.Response response = await http.get(
-        Uri.parse("${API.URL}${API.declaration_Service}declarations/urgence"),
+        Uri.parse(
+            "${API.URL}${API.declaration_Service}declarations/urgence/admin"),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
