@@ -74,7 +74,7 @@ class Donmaterielservice {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body);
+      var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       for (var item in responseBody) {
         Donmateriel don = Donmateriel.fromJson(item);
         donsMateriels.add(don);

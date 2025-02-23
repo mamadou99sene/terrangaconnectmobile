@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:terangaconnect/config/API.dart';
+import 'package:terangaconnect/core/app_export.dart';
 import 'package:terangaconnect/models/DonEspece.dart';
 import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Pret.dart';
@@ -103,10 +105,7 @@ class _InterventionsDialogState extends State<InterventionsDialog> {
                 const SizedBox(width: 8),
                 Text(
                   '$title ($count)',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                   style: theme.textTheme.labelLarge
                 ),
                 const Spacer(),
                 Container(
@@ -167,6 +166,9 @@ class _InterventionsDialogState extends State<InterventionsDialog> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.materiels.length,
       itemBuilder: (context, index) {
+        List<String> images = widget.materiels[index].imagesDon!
+            .map((imageUrl) => API.URL + imageUrl.substring(22))
+            .toList();
         final materiel = widget.materiels[index];
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -175,25 +177,26 @@ class _InterventionsDialogState extends State<InterventionsDialog> {
               backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.category, color: Colors.white),
             ),
-            title: Text(
-              materiel.titre,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            title: Text(materiel.titre, style: theme.textTheme.labelLarge),
+            subtitle: Text(
+              '${materiel.donnateur?.telephone}',
+              style: theme.textTheme.labelLarge,
             ),
-            subtitle: Text('${materiel.donnateur?.telephone}'),
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(materiel.description),
+                    Text(materiel.description,
+                        style: theme.textTheme.labelLarge),
                     if (materiel.imagesDon!.isNotEmpty)
                       Container(
                         height: 100,
                         margin: const EdgeInsets.only(top: 8),
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: materiel.imagesDon!.length,
+                          itemCount: images.length,
                           itemBuilder: (context, imgIndex) {
                             return Container(
                               margin: const EdgeInsets.only(right: 8),
@@ -201,8 +204,7 @@ class _InterventionsDialogState extends State<InterventionsDialog> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                      materiel.imagesDon![imgIndex]),
+                                  image: NetworkImage(images[imgIndex]),
                                   fit: BoxFit.cover,
                                 ),
                               ),

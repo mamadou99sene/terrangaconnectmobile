@@ -216,7 +216,7 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
         SizedBox(height: 16),
         Text(
           widget.urgencesociale.description,
-          style: theme.textTheme.bodyMedium,
+          style: theme.textTheme.labelLarge,
         ),
       ],
     );

@@ -200,7 +200,7 @@ class _EvenementState extends State<EvenementDetails> {
         SizedBox(height: 16),
         Text(
           widget.evenement.description,
-          style: theme.textTheme.bodyMedium,
+          style: theme.textTheme.labelLarge,
         ),
       ],
     );
