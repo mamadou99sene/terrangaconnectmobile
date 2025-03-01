@@ -4,21 +4,102 @@ import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/AppDemandeDon.dart';
 import 'package:terangaconnect/presentation/AppEvent.dart';
 import 'package:terangaconnect/presentation/AppUrgence.dart';
+import 'package:terangaconnect/services/AssistanceService.dart';
 import 'package:terangaconnect/widgets/app_bar/appbar_leading_image.dart';
 import 'package:terangaconnect/widgets/app_bar/appbar_title.dart';
 import 'package:terangaconnect/widgets/app_bar/custom_app_bar.dart';
+import 'dart:async';
 
-class Assistance extends StatelessWidget {
-  late Utilisateur utilisateur;
+class Assistance extends StatefulWidget {
+  final Utilisateur utilisateur;
+
   Assistance({required this.utilisateur});
+
+  @override
+  _AssistanceState createState() => _AssistanceState();
+}
+
+class _AssistanceState extends State<Assistance> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   String selectedCategory = 'Assistance';
+  bool _isLoading = false;
+  StreamSubscription? _streamSubscription;
+  String _currentResponse = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialiser la conversation avec le message de bienvenue
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AssistanceService.initializeConversation().then((_) {
+        setState(() {});
+        _scrollToBottom();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    _streamSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _sendMessage() {
+    if (_messageController.text.trim().isEmpty) return;
+
+    final message = _messageController.text.trim();
+    setState(() {
+      AssistanceService.addUserMessage(message);
+      _messageController.clear();
+      _isLoading = true;
+      _currentResponse = '';
+    });
+
+    _scrollToBottom();
+
+    // Annuler toute souscription de stream précédente
+    _streamSubscription?.cancel();
+
+    // Démarrer la nouvelle requête
+    _streamSubscription =
+        AssistanceService.getAssistance(message).listen((response) {
+      setState(() {
+        _currentResponse += response;
+      });
+      _scrollToBottom();
+    }, onError: (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: $error')),
+      );
+    }, onDone: () {
+      setState(() {
+        _isLoading = false;
+      });
+      _scrollToBottom();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset:
-            true, // Important pour éviter l'overflow quand le clavier apparaît
+        resizeToAvoidBottomInset: true,
         appBar: _buildAppBar(context),
         body: SafeArea(
           child: LayoutBuilder(
@@ -27,12 +108,14 @@ class Assistance extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                      controller: _scrollController,
                       padding: EdgeInsets.symmetric(horizontal: 18.h),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 20),
                           _buildMessages(),
+                          if (_isLoading) _buildTypingIndicator(),
                         ],
                       ),
                     ),
@@ -50,15 +133,41 @@ class Assistance extends StatelessWidget {
   Widget _buildMessages() {
     return Column(
       children: [
-        _buildMessageItem(
-            "Je souhaite avoir des informations par rapport a la plateforme teranga connect",
-            "il y a 3 minutes",
-            isUserMessage: true),
-        _buildMessageItem(
-            "Teranga connect est une plateforme communautaire Sénégalaise qui met en avant l'aspect de la hospitalité profondement ancrée dans l'esprit des sénégalais. Cette plateforme vous permet de declararer des urgences sociales, a savoir des malades, des etudiants n'ayant pas de moyen pour s'inscrire, des evemenements.... Et permet aux utilisateurs d'apporter leurs interventions",
-            "il y a 3 minutes",
-            isUserMessage: false),
+        ...AssistanceService.messageHistory
+            .map((message) => _buildMessageItem(
+                message.text, message.formattedTime,
+                isUserMessage: message.isUserMessage))
+            .toList(),
       ],
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.symmetric(vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Teranga est en train d'écrire "),
+            SizedBox(width: 10),
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -77,13 +186,10 @@ class Assistance extends StatelessWidget {
           crossAxisAlignment:
               isUserMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              text,
-              style: TextStyle(fontSize: 16),
-            ),
+            Text(text, style: theme.textTheme.headlineLarge),
             SizedBox(height: 5),
             Text(
-              time,
+              time, // Maintenant time est formaté
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
@@ -99,6 +205,7 @@ class Assistance extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
+              controller: _messageController,
               maxLines: null,
               decoration: InputDecoration(
                 hintText: "Rédiger votre message...",
@@ -107,16 +214,15 @@ class Assistance extends StatelessWidget {
                 ),
                 contentPadding: EdgeInsets.all(10),
               ),
+              onSubmitted: (_) => _sendMessage(),
             ),
           ),
           IconButton(
             icon: Icon(
               Icons.send,
-              color: Colors.black54,
+              color: _isLoading ? Colors.grey : Colors.black54,
             ),
-            onPressed: () {
-              // ici la logique pour envoyer le message
-            },
+            onPressed: _isLoading ? null : _sendMessage,
           ),
         ],
       ),
@@ -182,7 +288,7 @@ class Assistance extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AppUrgence(
-                                utilisateur: utilisateur,
+                                utilisateur: widget.utilisateur,
                               )));
                 }),
                 _buildBottomButtonIcon("Événements", Icons.event, () {
@@ -190,7 +296,7 @@ class Assistance extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AppEvent(
-                                utilisateur: utilisateur,
+                                utilisateur: widget.utilisateur,
                               )));
                 }),
                 _buildBottomButtonIcon("Demande sang", Icons.favorite, () {
@@ -198,7 +304,7 @@ class Assistance extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AppDemandeDonSang(
-                                utilisateur: utilisateur,
+                                utilisateur: widget.utilisateur,
                               )));
                 }),
                 _buildBottomButtonIcon("Assistance", Icons.assistant, () {}),
