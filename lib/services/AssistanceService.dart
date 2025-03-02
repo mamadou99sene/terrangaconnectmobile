@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/models/MessageChat.dart';
 
 class AssistanceService {
@@ -28,8 +29,10 @@ class AssistanceService {
   static Stream<String> getAssistance(String query) async* {
     try {
       // Requête standard avec http.get
-      final request = http.Request('GET',
-          Uri.parse("http://10.153.32.200:8084/api/assistance?query=$query"));
+      final request = http.Request(
+          'GET',
+          Uri.parse(
+              "${API.URL}${API.assistance_Service}/assistance?query=$query"));
 
       request.headers.addAll({
         HttpHeaders.contentTypeHeader: 'application/json',
