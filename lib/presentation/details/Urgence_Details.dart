@@ -6,6 +6,7 @@ import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Pret.dart';
 import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/discussion/DiscussionScreen.dart';
 import 'package:terangaconnect/presentation/interventions/InterventionsDialog.dart';
 import 'package:terangaconnect/services/DonEspeceService.dart';
 import 'package:terangaconnect/services/DonMaterielService.dart';
@@ -130,8 +131,16 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
       children: [
         IconButton(
           icon: Icon(Icons.message_outlined, color: Colors.black54),
-          onPressed: () => Control().launchWhatsApp(
-              context, widget.urgencesociale.demandeur!.telephone),
+          onPressed: () {
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DiscussionsScreen(
+                declarationId: widget.urgencesociale.id!,
+              ),
+            ),
+          );
+          }
         ),
         IconButton(
           icon: Icon(Icons.comment_outlined, color: Colors.black54),

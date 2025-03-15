@@ -22,11 +22,11 @@ class Utilisateurservice {
     return savedUser;
   }
 
-  Future<Utilisateur> getutilisateurById(Utilisateur utilisateur) async {
+  Future<Utilisateur> getutilisateurById(String utilisateurId) async {
     late Utilisateur returnedUser;
     http.Response response = await http.get(
         Uri.parse(
-            "${API.URL}${API.user_Service}utilisateurs/${utilisateur.id}"),
+            "${API.URL}${API.user_Service}utilisateurs/${utilisateurId}"),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
         }).timeout(Duration(seconds: 10));

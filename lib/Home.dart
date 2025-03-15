@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:terangaconnect/core/app_export.dart';
-import 'package:terangaconnect/models/Utilisateur.dart';
-import 'package:terangaconnect/presentation/AppUrgence.dart';
-import 'package:terangaconnect/presentation/connexion/Connexion.dart';
+import 'package:terangaconnect/presentation/connexion/AuthCheckWrapper.dart';
 import 'package:terangaconnect/presentation/connexion/provider/ConnexionProvider.dart';
 import 'package:terangaconnect/presentation/inscription/Inscription.dart';
 import 'package:terangaconnect/presentation/inscription/provider/InscriptionProvider.dart';
 import 'package:terangaconnect/presentation/participation_don_sang/provider/Participation_don_sang_provider.dart';
 import 'package:terangaconnect/presentation/participation_materiel/provider/Participation_Materiel_Provider.dart';
 import 'package:terangaconnect/presentation/participation_pret/provider/Participation_pret_provider.dart';
-import 'package:terangaconnect/presentation/publication_demande_don_sang/PublicationDemandeDonSang.dart';
 import 'package:terangaconnect/presentation/publication_demande_don_sang/provider/PublicationDemandeDonSangProvider.dart';
-import 'package:terangaconnect/presentation/publication_evenement/PublicationEvenement.dart';
 import 'package:terangaconnect/presentation/publication_evenement/provider/PublicationEvenementProvider.dart';
-import 'package:terangaconnect/presentation/publication_urgence/PublicationUrgence.dart';
 import 'package:terangaconnect/presentation/publication_urgence/provider/PublicationUrgenceProvider.dart';
+
+import 'services/AuthService.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -40,6 +37,9 @@ class Home extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) => ParticipationDonSangProvider()),
             ChangeNotifierProvider(create: (context) => Connexionprovider()),
+             Provider<KeycloakAuthService>(
+              create: (_) => KeycloakAuthService(),
+            ),
           ],
           child: MaterialApp(
             theme: theme,
@@ -54,7 +54,7 @@ class Home extends StatelessWidget {
             supportedLocales: [Locale('en', '')],
             routes: {
               "/inscription": (context) => Inscription(),
-              "/": (context) => Connexion(),
+              "/": (context) => AuthCheckWrapper(),
             },
             initialRoute: "/",
             /*  home: AppUrgence(
