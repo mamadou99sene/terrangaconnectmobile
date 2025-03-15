@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/connexion/Connexion.dart';
 import 'package:terangaconnect/presentation/mon_profile/provider/MonProfileProvider.dart';
+import 'package:terangaconnect/services/AuthService.dart';
 import 'package:terangaconnect/widgets/custom_bottom_bar.dart';
 
 import '../../core/app_export.dart';
@@ -15,6 +17,8 @@ class MonProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService =
+        Provider.of<KeycloakAuthService>(context, listen: false);
     return ChangeNotifierProvider(
       create: (_) => Monprofileprovider(utilisateur),
       child: SafeArea(
@@ -47,7 +51,16 @@ class MonProfile extends StatelessWidget {
                 ),
                 Spacer(),
                 LogoutButton(
-                  onTap: () async {},
+                  onTap: () async {
+                    bool success = await authService.logout();
+                    if (success) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => Connexion()),
+                        (route) =>
+                            false, // Supprime toutes les routes précédentes
+                      );
+                    }
+                  },
                 ),
               ],
             ),

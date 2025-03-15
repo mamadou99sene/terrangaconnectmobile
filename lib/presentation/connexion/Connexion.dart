@@ -8,12 +8,14 @@ import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 import '../../models/Utilisateur.dart';
 import '../../widgets/RejectedDialog.dart';
 import '../AppUrgence.dart';
+
 class Connexion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Injectez le service d'authentification via Provider si nécessaire
-    final authService = Provider.of<KeycloakAuthService>(context, listen: false);
-    
+    final authService =
+        Provider.of<KeycloakAuthService>(context, listen: false);
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: theme.colorScheme.onPrimaryContainer.withOpacity(1),
@@ -41,7 +43,6 @@ class Connexion extends StatelessWidget {
                   style: theme.textTheme.titleLarge,
                 ),
                 SizedBox(height: 70.v),
-                
                 CustomElevatedButton(
                   onPressed: () async {
                     try {
@@ -54,49 +55,50 @@ class Connexion extends StatelessWidget {
                           return WillPopScope(
                             onWillPop: () async => false,
                             child: Center(
-                              child: SpinKitCircle(
-                                color: Colors.green,
-                                size: 50,
-                              )
-                            ),
+                                child: SpinKitCircle(
+                              color: Colors.green,
+                              size: 50,
+                            )),
                           );
                         },
                       );
-                      
+
                       final success = await authService.login();
-                      
-                      if (dialogContext != null && Navigator.canPop(dialogContext!)) {
+
+                      if (dialogContext != null &&
+                          Navigator.canPop(dialogContext!)) {
                         Navigator.pop(dialogContext!);
                       }
-                      
+
                       if (success) {
-                        // Récupérer les informations utilisateur
                         final userInfo = await authService.getUserInfo();
                         final roles = await authService.getUserRoles();
-                        
+
                         if (userInfo != null) {
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AppUrgence(
-                                utilisateur: Utilisateur(
-                                  email: userInfo['email'] ?? '',
-                                  telephone: userInfo['preferred_username'] ?? '',
-                                  roles: roles,
-                                )
-                              )
-                            )
-                          );
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AppUrgence(
+                                          utilisateur: Utilisateur(
+                                        id: userInfo['id'],
+                                        email: userInfo['email'] ?? '',
+                                        telephone:
+                                            userInfo['preferred_username'] ??
+                                                '',
+                                        roles: roles,
+                                      ))));
                         }
                       } else {
                         String title = "Connexion non réussie";
-                        String message = "Identifiants incorrects. Merci de ressayer !!!";
+                        String message =
+                            "Identifiants incorrects. Merci de ressayer !!!";
                         showRejecteddialogDialog(context, title, message);
                       }
                     } catch (e) {
                       print('Erreur de connexion: $e');
                       String title = "Erreur";
-                      String message = "Une erreur s'est produite. Veuillez réessayer.";
+                      String message =
+                          "Une erreur s'est produite. Veuillez réessayer.";
                       showRejecteddialogDialog(context, title, message);
                     }
                   },
@@ -104,7 +106,6 @@ class Connexion extends StatelessWidget {
                   text: "Se connecter".tr,
                   buttonStyle: CustomButtonStyles.fillPrimary,
                 ),
-                
                 SizedBox(height: 29.v),
                 GestureDetector(
                   onTap: () {

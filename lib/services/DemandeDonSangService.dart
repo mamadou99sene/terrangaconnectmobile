@@ -2,18 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:terangaconnect/config/API.dart';
 import 'package:terangaconnect/models/DemandeDonSang.dart';
+import 'package:terangaconnect/shared/HttpSharedHeader.dart';
 
 class Demandedonsangservice {
+  FlutterSecureStorage secureStorage = FlutterSecureStorage();
   Future<List<Demandedonsang>> getAllDemandeDonSang() async {
     List<Demandedonsang> allDemandeDonSang = [];
+     final headers = await Httpsharedheader.getAuthHeaders();
     http.Response response = await http.get(
         Uri.parse("${API.URL}${API.declaration_Service}declarations/donSang"),
-        headers: {
-          HttpHeaders.contentTypeHeader: 'application/json',
-        }).timeout(Duration(seconds: 10));
+        headers: headers).timeout(Duration(seconds: 10));
     if (response.statusCode == 201 || response.statusCode == 200) {
       var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
       for (var demande in responseJson) {
@@ -27,12 +29,11 @@ class Demandedonsangservice {
   Future<Demandedonsang> getDemandeDonSangById(
       Demandedonsang demandedon) async {
     late Demandedonsang demandedonsang;
+     final headers = await Httpsharedheader.getAuthHeaders();
     http.Response response = await http.get(
         Uri.parse(
             "${API.URL}${API.declaration_Service}declarations/donSang/${demandedon.id}"),
-        headers: {
-          HttpHeaders.contentTypeHeader: 'application/json',
-        }).timeout(Duration(seconds: 10));
+        headers: headers).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
       var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       demandedonsang = Demandedonsang.fromJson(responseBody);
@@ -43,10 +44,12 @@ class Demandedonsangservice {
   Future<bool> saveDemandedonSang(
       Demandedonsang demandeDonSang, List<File> images) async {
     try {
+       final String? accessToken = await secureStorage.read(key: 'access_token');
       var request = http.MultipartRequest(
         'POST',
         Uri.parse("${API.URL}${API.declaration_Service}declarations/donSang"),
       );
+      request.headers[HttpHeaders.authorizationHeader] = 'Bearer $accessToken';
       final demandeDonJson = demandeDonSang.toJson();
       demandeDonJson.forEach((key, value) {
         request.fields[key] = value.toString();

@@ -76,7 +76,7 @@ void showRejecteddialogDialog(
     BuildContext context, String titre, String message) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return Rejecteddialog(
         titre: titre,

@@ -19,26 +19,24 @@ class _AuthCheckWrapperState extends State<AuthCheckWrapper> {
   }
 
   Future<void> _checkAuth() async {
-    final authService = Provider.of<KeycloakAuthService>(context, listen: false);
+    final authService =
+        Provider.of<KeycloakAuthService>(context, listen: false);
     final isAuthenticated = await authService.isAuthenticated();
-    
+
     if (isAuthenticated) {
       final userInfo = await authService.getUserInfo();
       final roles = await authService.getUserRoles();
       
       if (userInfo != null) {
         Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AppUrgence(
-              utilisateur: Utilisateur(
-                email: userInfo['email'] ?? '',
-                telephone: userInfo['preferred_username'] ?? '',
-                roles: roles,
-              )
-            )
-          )
-        );
+            context,
+            MaterialPageRoute(
+                builder: (context) => AppUrgence(
+                        utilisateur: Utilisateur(
+                      email: userInfo['email'] ?? '',
+                      telephone: userInfo['preferred_username'] ?? '',
+                      roles: roles,
+                    ))));
       }
     }
   }

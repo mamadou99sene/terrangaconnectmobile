@@ -123,26 +123,35 @@ class KeycloakAuthService {
   }
 
   // Obtenir les informations utilisateur
-  Future<Map<String, dynamic>?> getUserInfo() async {
-    try {
-      final String? accessToken = await secureStorage.read(key: 'access_token');
-      if (accessToken == null) return null;
+Future<Map<String, dynamic>?> getUserInfo() async {
+  try {
+    final String? accessToken = await secureStorage.read(key: 'access_token');
+    if (accessToken == null) return null;
+    final response = await http.get(
+      Uri.parse(userInfoEndpoint),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
 
-      final response = await http.get(
-        Uri.parse(userInfoEndpoint),
-        headers: {'Authorization': 'Bearer $accessToken'},
-      );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
-      return null;
-    } catch (e) {
-      print('Get user info error: $e');
-      return null;
+    if (response.statusCode == 200) {
+      final userInfo = jsonDecode(response.body);
+      final String userId = userInfo['sub'] ?? 
+                            userInfo['id'] ?? 
+                            userInfo['user_id'] ?? 
+                            '';
+      
+      // On ajoute l'ID dans les informations retournées
+      userInfo['id'] = userId;
+      
+      return userInfo;
     }
+    
+    // Option 2: En cas d'échec de l'appel à userinfo, extraire du token
+    return _extractUserInfoFromToken(accessToken);
+  } catch (e) {
+    print('Get user info error: $e');
+    return null;
   }
-
+}
   // Vérifier si l'utilisateur est authentifié
   Future<bool> isAuthenticated() async {
     final String? accessToken = await secureStorage.read(key: 'access_token');
@@ -176,4 +185,47 @@ class KeycloakAuthService {
       return [];
     }
   }
+
+Future<bool> isTokenValid() async {
+  final String? accessToken = await secureStorage.read(key: 'access_token');
+  if (accessToken == null) return false;
+
+  // Décoder le JWT pour vérifier l'expiration
+  final parts = accessToken.split('.');
+  if (parts.length != 3) return false;
+
+  String payload = parts[1];
+  payload = base64Url.normalize(payload);
+  final payloadMap = jsonDecode(utf8.decode(base64Url.decode(payload)));
+  
+  // Vérifier l'expiration
+  final exp = payloadMap['exp'] as int;
+  final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  
+  print("Token expire à: ${DateTime.fromMillisecondsSinceEpoch(exp * 1000)}");
+  print("Heure actuelle: ${DateTime.now()}");
+  
+  return now < exp;
+}
+Map<String, dynamic>? _extractUserInfoFromToken(String accessToken) {
+  try {
+    final parts = accessToken.split('.');
+    if (parts.length != 3) return null;
+
+    String payload = parts[1];
+    payload = base64Url.normalize(payload);
+    final payloadMap = jsonDecode(utf8.decode(base64Url.decode(payload)));
+    return {
+      'id': payloadMap['sub'] ?? '',
+      'email': payloadMap['email'] ?? '',
+      'preferred_username': payloadMap['preferred_username'] ?? '',
+      'name': payloadMap['name'] ?? '',
+      'given_name': payloadMap['given_name'] ?? '',
+      'family_name': payloadMap['family_name'] ?? '',
+    };
+  } catch (e) {
+    print('Error extracting user info from token: $e');
+    return null;
+  }
+}
 }
