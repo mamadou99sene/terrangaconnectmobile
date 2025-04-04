@@ -8,6 +8,7 @@ import 'package:terangaconnect/models/UrgenceSociale.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
 import 'package:terangaconnect/presentation/discussion/DiscussionScreen.dart';
 import 'package:terangaconnect/presentation/interventions/InterventionsDialog.dart';
+import 'package:terangaconnect/services/DiscussionService.dart';
 import 'package:terangaconnect/services/DonEspeceService.dart';
 import 'package:terangaconnect/services/DonMaterielService.dart';
 import 'package:terangaconnect/services/PretService.dart';
@@ -130,18 +131,23 @@ class _UrgenceDetailsState extends State<UrgenceDetails> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          icon: Icon(Icons.message_outlined, color: Colors.black54),
-          onPressed: () {
-           Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DiscussionsScreen(
-                declarationId: widget.urgencesociale.id!,
-              ),
-            ),
-          );
-          }
-        ),
+            icon: Icon(Icons.message_outlined, color: Colors.black54),
+            onPressed: () {
+              if(widget.urgencesociale.demandeurId!=widget.utilisateur.id)
+              {
+                DiscussionService().createDiscussion(
+                  declarationId: widget.urgencesociale.id!,
+                  utilisateurId: widget.utilisateur.id!);
+              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DiscussionsScreen(
+                    declarationId: widget.urgencesociale.id!,
+                  ),
+                ),
+              );
+            }),
         IconButton(
           icon: Icon(Icons.comment_outlined, color: Colors.black54),
           onPressed: () {

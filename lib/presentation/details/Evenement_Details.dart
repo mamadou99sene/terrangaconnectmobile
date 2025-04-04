@@ -7,6 +7,7 @@ import 'package:terangaconnect/models/DonMateriel.dart';
 import 'package:terangaconnect/models/Evenement.dart';
 import 'package:terangaconnect/models/Pret.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/discussion/DiscussionScreen.dart';
 import 'package:terangaconnect/presentation/interventions/InterventionsDialog.dart';
 import 'package:terangaconnect/services/DonEspeceService.dart';
 import 'package:terangaconnect/services/DonMaterielService.dart';
@@ -126,8 +127,16 @@ class _EvenementState extends State<EvenementDetails> {
       children: [
         IconButton(
           icon: Icon(Icons.message, color: Colors.black54),
-          onPressed: () => Control()
-              .launchWhatsApp(context, widget.evenement.demandeur!.telephone),
+          onPressed: (){
+             Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DiscussionsScreen(
+                declarationId: widget.evenement.id!,
+              ),
+            ),
+          );
+          }
         ),
         IconButton(
           icon: Icon(Icons.comment, color: Colors.black54),
@@ -169,7 +178,7 @@ class _EvenementState extends State<EvenementDetails> {
         ),
         IconButton(
           icon: Icon(Icons.share, color: Colors.black54),
-          onPressed: () => Control().shareEvent,
+          onPressed: () => Control().shareEvent(widget.evenement),
         ),
       ],
     );

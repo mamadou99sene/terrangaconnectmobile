@@ -45,12 +45,10 @@ class _DiscussionsScreenState extends State<DiscussionsScreen> {
         if (!_users.containsKey(discussion.utilisateurId)) {
           final user = await utilisateurservice
               .getutilisateurById(discussion.utilisateurId);
-          if (user != null) {
-            setState(() {
-              _users[discussion.utilisateurId] = user;
-            });
-          }
-        }
+          setState(() {
+            _users[discussion.utilisateurId] = user;
+          });
+                }
 
         // Récupérer le dernier message
         final messages = await _discussionService.getMessagesForDiscussion(

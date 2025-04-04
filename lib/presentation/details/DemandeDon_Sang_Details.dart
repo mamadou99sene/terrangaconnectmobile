@@ -4,6 +4,8 @@ import 'package:terangaconnect/control/Control.dart';
 import 'package:terangaconnect/models/DemandeDonSang.dart';
 import 'package:terangaconnect/models/DonSang.dart';
 import 'package:terangaconnect/models/Utilisateur.dart';
+import 'package:terangaconnect/presentation/discussion/DiscussionScreen.dart';
+import 'package:terangaconnect/presentation/interventions/DonSangInterventionsDialog.dart';
 import 'package:terangaconnect/presentation/participation_don_sang/Participation_don_sang.dart';
 import 'package:terangaconnect/services/DonSangService.dart';
 import 'package:terangaconnect/theme/custom_button_style.dart';
@@ -198,8 +200,16 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
       children: [
         IconButton(
           icon: Icon(Icons.message, color: Colors.black54),
-          onPressed: () => Control().launchWhatsApp(
-              context, widget.demandedonsang.demandeur!.telephone),
+          onPressed: (){
+             Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DiscussionsScreen(
+                declarationId: widget.demandedonsang.id!,
+              ),
+            ),
+          );
+          }
         ),
         IconButton(
           icon: Icon(Icons.comment, color: Colors.black54),
@@ -216,6 +226,12 @@ class _DemandedonSangDetailsState extends State<DemandedonSangDetails> {
             for (var d in dons!) {
               print(d.toJson());
             }
+            showDialog(
+              context: context,
+              builder: (context) => DonSangInterventionsDialog(
+                dons: dons,
+              ),
+            );
           },
         ),
         IconButton(
