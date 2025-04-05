@@ -55,7 +55,7 @@ class AssistanceService {
         // Ajouter la réponse complète à l'historique des messages
         addResponseMessage(completeResponse);
       } else {
-        final errorMessage = 'Erreur: ${streamedResponse.statusCode}';
+        final errorMessage = 'Le service est indisponible.';
         addResponseMessage(errorMessage);
         yield errorMessage;
         throw Exception('Erreur de requête: ${streamedResponse.statusCode}');
@@ -69,7 +69,7 @@ class AssistanceService {
       if (kDebugMode) {
         print('Erreur lors de l\'appel de l\'API d\'assistance: $e');
       }
-      final errorMessage = 'Erreur: Impossible de récupérer la réponse. $e';
+      final errorMessage = "Impossible de récupérer la réponse de l'assistant";
       addResponseMessage(errorMessage);
       yield errorMessage;
       rethrow;
