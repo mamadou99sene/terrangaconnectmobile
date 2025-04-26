@@ -17,6 +17,7 @@ class MonProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(utilisateur.id);
     final authService =
         Provider.of<KeycloakAuthService>(context, listen: false);
     return ChangeNotifierProvider(

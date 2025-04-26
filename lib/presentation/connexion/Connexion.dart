@@ -6,6 +6,7 @@ import 'package:terangaconnect/theme/custom_button_style.dart';
 import 'package:terangaconnect/widgets/custom_elevated_button.dart';
 
 import '../../models/Utilisateur.dart';
+import '../../services/UtilisateurService.dart';
 import '../../widgets/RejectedDialog.dart';
 import '../AppUrgence.dart';
 
@@ -15,6 +16,7 @@ class Connexion extends StatelessWidget {
     // Injectez le service d'authentification via Provider si nécessaire
     final authService =
         Provider.of<KeycloakAuthService>(context, listen: false);
+    late Utilisateur currentUser;
 
     return SafeArea(
       child: Scaffold(
@@ -72,21 +74,17 @@ class Connexion extends StatelessWidget {
 
                       if (success) {
                         final userInfo = await authService.getUserInfo();
-                        final roles = await authService.getUserRoles();
+                       //S final roles = await authService.getUserRoles();
+                        currentUser = await Utilisateurservice()
+                            .getutilisateurByKeycloakId(userInfo?['id']);
 
                         if (userInfo != null) {
+                         print("utilis ===> ${currentUser.id}");
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AppUrgence(
-                                          utilisateur: Utilisateur(
-                                        id: userInfo['id'],
-                                        email: userInfo['email'] ?? '',
-                                        telephone:
-                                            userInfo['preferred_username'] ??
-                                                '',
-                                        roles: roles,
-                                      ))));
+                                          utilisateur: currentUser)));
                         }
                       } else {
                         String title = "Connexion non réussie";

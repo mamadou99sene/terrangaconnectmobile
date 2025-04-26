@@ -37,6 +37,22 @@ class Utilisateurservice {
     return returnedUser;
   }
 
+  Future<Utilisateur> getutilisateurByKeycloakId(String keycloackid) async {
+    late Utilisateur returnedUser;
+    http.Response response = await http.get(
+        Uri.parse(
+            "${API.URL}${API.user_Service}utilisateurs/keycloak/${keycloackid}"),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+        }).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body);
+      returnedUser = Utilisateur.fromJson(responseBody);
+    }
+    return returnedUser;
+  }
+
+
   Future<Uint8List?> getUserProfile(Utilisateur utilisateur) async {
     late Uint8List profile;
     http.Response response = await http
